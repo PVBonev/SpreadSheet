@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include "Command.cpp"
+#include "HelpCommand.cpp"
+#include "OpenCommand.cpp"
 
 void engine()
 {
@@ -28,14 +30,21 @@ void engine()
     }
 
     //cmd.push_back('\0');
+    Command* command;
 
     std::cout <<"Entered Command:"<< cmd << std::endl;
     std::cout <<"Entered Arguments:"<< args << std::endl;
 
-    if(cmd.compare("hello") == 0)//its not the terminating 0//cmd == "hello"
+    if(cmd.compare("help") == 0)//its not the terminating 0//cmd == "help"
     {
-        std::cout<<"Hello world\n";
+        std::cout<<"help command called\n";
+        command = new HelpCommand();
         
+    }
+    else if(cmd.compare("open") == 0)
+    {
+        std::cout<<"open command called\n";
+        command = new OpenCommand(args);
     }
     else if(cmd.compare("plus") == 0)
     {
@@ -53,7 +62,8 @@ void engine()
     {
         std::cout << "Invalid command\n";
     }
-    //command->execute();
+
+    command->execute();
 }
 
 int main()
