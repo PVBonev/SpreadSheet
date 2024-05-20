@@ -2,8 +2,8 @@
 
 enum Type
 {
-    WholeNumber = 0,
-    DecimalNumber = 1,
+    WholeNum = 0,
+    DecimalNum = 1,
     Text = 2,
     Formula = 3    
 };

@@ -14,7 +14,7 @@ private:
 public:
     SpreadSheet();
 
-    void addField(int row, int col, Field field);
+    void addField(int row, int col, Field* field);
     void changeField(int row, int col, Field field);
     void saveToFile(std::string fileName);
     void loadFromFile(std::string fileName);

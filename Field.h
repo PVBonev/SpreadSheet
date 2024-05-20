@@ -6,16 +6,30 @@ class Field
 private:
     int row;
     int column;
+    std::string value;//maybe we can do that for easier spreadsheet class use
     Type type;
 
-    Field(int row, int column, Type type) : row(row), column(column), type(type) {}
+    
 
 public:
-    static Field createWholeNumber(int row, int column);
+    Field(int row, int column, Type type) : row(row), column(column), type(type) {}
 
-    static Field createDecimalNumber(int row, int column);
+    virtual bool isValid() = 0;
+    virtual void setValue(std::string value) = 0;
+    virtual std::string getValue() const = 0;
 
-    static Field createText(int row, int column);
+    //for tests
+    void printO() const;
 
-    static Field createFormula(int row, int column);
+    int getRow() const { return row; }
+    int getColumn() const { return column; }
+    
+    /*//static Field createWholeNumber(int row, int column);
+
+    //static Field createDecimalNumber(int row, int column);
+
+    //static Field createText(int row, int column);
+
+    //static Field createFormula(int row, int column);
+    */
 };

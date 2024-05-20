@@ -1,7 +1,8 @@
-#include "Command.cpp"
 #include <iostream>
 #include <string>
 #include <fstream>
+#include "Command.cpp"
+#include "SpreadSheet.cpp"
 
 class OpenCommand: public Command
 {
