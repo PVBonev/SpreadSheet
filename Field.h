@@ -12,17 +12,19 @@ private:
     
 
 public:
-    Field(int row, int column, Type type) : row(row), column(column), type(type) {}
+    Field(int row, int column, std::string value, Type type);
 
     virtual bool isValid() = 0;
-    virtual void setValue(std::string value) = 0;
-    virtual std::string getValue() const = 0;
+    //virtual void setValue(std::string value) = 0;
+    //virtual std::string getValue() const = 0;
+
+    //int getTypeId() const { return (int)type; }//this or maybe a more complicated version that checks the string and returns the type accordingly
 
     //for tests
-    void printO() const;
+    virtual void print() const;
 
     int getRow() const { return row; }
-    int getColumn() const { return column; }
+    int getCol() const { return column; }
     
     /*//static Field createWholeNumber(int row, int column);
 

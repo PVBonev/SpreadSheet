@@ -2,11 +2,13 @@
 #include <string>
 #include "Field.h"
 
-Field::Field(int row, int column, Type type) : row(row), column(column), type(type) {}
+Field::Field(int row, int column, std::string value, Type type) 
+    : row(row), column(column), value(value), type(type) {}
 
-void Field::printO() const
+void Field::print() const
 {
     std::cout << "Row: " << row << " Column: " << column << " Type: " << type << std::endl;
+    std::cout << "The value is: " << value << std::endl;
 }
 
 /*
@@ -33,4 +35,14 @@ Field Field::createFormula(int row, int column)
 
 */
 
+//for testing
+/*
+int main()
+{
+    Field f(1, 1, "123", Type::WholeNum), f2(2, 2, "456", Type::WholeNum);
+    f.print();
+    f2.print();
 
+    return 0;
+}
+*/
