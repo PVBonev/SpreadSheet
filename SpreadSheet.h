@@ -3,8 +3,6 @@
 #include <string>
 #include "Field.h"
 
-int whatStringIsThat(std::string str);//returns 0 if its a whole number, 1 if its a decimal number, 2 if its a string
-
 class SpreadSheet
 {
 private:
