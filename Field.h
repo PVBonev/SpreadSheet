@@ -6,22 +6,27 @@ class Field
 private:
     int row;
     int column;
+protected:
     std::string value;//maybe we can do that for easier spreadsheet class use
     Type type;
+    //maybe new type for empty cell and by default we set all Fields to empty cell
+    //new class empty cell?
+
+    //bool isValid(std::string value) const;
 
     
 
 public:
+    Field();
     Field(int row, int column, std::string value, Type type);
-
-    virtual bool isValid() = 0;
-    //virtual void setValue(std::string value) = 0;
-    //virtual std::string getValue() const = 0;
+    
+    void setValue(std::string value);
+    std::string getValue() const;
 
     //int getTypeId() const { return (int)type; }//this or maybe a more complicated version that checks the string and returns the type accordingly
 
     //for tests
-    virtual void print() const;
+    virtual void print() const;// = 0; perhaps
 
     int getRow() const { return row; }
     int getCol() const { return column; }

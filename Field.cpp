@@ -2,13 +2,26 @@
 #include <string>
 #include "Field.h"
 
+Field::Field() : row(0), column(0), value(""), type(Type::Empty) {}
+
 Field::Field(int row, int column, std::string value, Type type) 
     : row(row), column(column), value(value), type(type) {}
 
 void Field::print() const
 {
+    std::cout<<"Printing default field\n";
     std::cout << "Row: " << row << " Column: " << column << " Type: " << type << std::endl;
     std::cout << "The value is: " << value << std::endl;
+}
+
+void Field::setValue(std::string value)
+{
+    this->value = value;
+}
+
+std::string Field::getValue() const
+{
+    return value;
 }
 
 /*

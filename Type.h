@@ -6,5 +6,6 @@ enum Type
     WholeNum = 1,
     DecimalNum = 2,
     Text = 3,
-    Formula = 4,        
+    Formula = 4,
+    Empty = 5        
 };
