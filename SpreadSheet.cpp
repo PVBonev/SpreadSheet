@@ -4,151 +4,207 @@
 #include "SpreadSheet.h"
 #include "Field.h"
 #include "WholeNumber.h"
+#include "EmptyField.h"
 
-int whatStringIsThat(std::string str)//returns 0 if its a whole number, 1 if its a decimal number, 2 if its a string
+//all good
+bool isWholeNumber(std::string str)
 {
-    //after execution only one of those flags will be true
-    bool isWholeNumber = true;
-    bool isDecimalNumber = true;
-    bool isString = true;
-    bool isFormula = true;
-    //what do we do if we have an empty input? think later 
-
-    //check if its a whole number
     for(std::size_t i = 0; i < str.size(); ++i)
     {
         if(str[i] < '0' || str[i] > '9')
         {
-            isWholeNumber = false;
-            break;
+            return false;
         }
     }
-    
-    if(isWholeNumber)
-    {
-        return 1;
-    }
-
-    //check if its a decimal number
-    if(str[str.size() - 1] == '.')// we consider a number that ends with a dot as invalid f e 12. is invalid
-    {
-        isDecimalNumber = false;
-    }
+    return true;
+}
+//all good
+bool isDecimalNumber(std::string str)
+{
     bool hasDot = false;
     for(std::size_t i = 0; i < str.size(); ++i)
     {
-        
-
-        if(str[i] == '.')//mark first occurance of a dot
+        if(str[i] == '.')
         {
             if(hasDot == true)
             {
-                isDecimalNumber = false;
-                i = str.size();//break the loop
+                return false;
             }
-            
             hasDot = true;
             continue;
         }
-
-        if(str[i] < '0' || str[i] > '9' )
+        if(str[i] < '0' || str[i] > '9')
         {
-            isDecimalNumber = false;
-            i = str.size();//break the loop
-        }        
+            return false;
+        }
     }
+    return true;
+}
+//all good
+bool isString(std::string str)
+{
+    if(str[0] == '"' && str[str.size() - 1] == '"')
+    {
+        return true;
+    }
+    return false;
+}
 
-    if(isDecimalNumber)
+//weak and obsolete
+//only works for R1C1 format(1 digit row and 1 digit column)
+bool isAdress(std::string str)
+{
+    if(str[0] == 'R' && str[2] == 'C' && str[1] >= '0' && str[1] <= '9' && str[3] >= '0' && str[3] <= '9')
+    {
+        return true;
+    }
+    return false;
+
+}
+
+//all good boss
+bool isAdress2(std::string str)
+{
+    
+    if(str[0] == 'R' && str.size() >=4)
+    {
+        std::size_t pos = str.find_first_of('C');
+
+        if(pos != std::string::npos)
+        {
+            std::string row = str.substr(1, pos - 1);//the actual number part
+            std::string col = str.substr(pos + 1);//the actual number part
+
+            std::cout<<"substrings 1 and 2:"<<row<<" "<<col<<std::endl;
+
+
+            if(isWholeNumber(row) && isWholeNumber(col))
+            {
+                if(std::stoi(row) > 0 && std::stoi(col) > 0
+                  && std::stoi(row) < 100 && std::stoi(col) < 100)
+                {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool isFormula(const std::string& str) 
+{
+  if (str[0] == '=') 
+  {
+    // Find the first occurrence of any operator (+, -, *, /)
+    size_t pos = str.find_first_of("+-*/");
+
+    // Check if an operator was found
+    if (pos != std::string::npos) 
+    {
+        // Extract substrings
+        std::string substr1 = str.substr(1, pos - 1); 
+        std::string substr2 = str.substr(pos + 1);
+
+        if((isWholeNumber(substr1) || isAdress2(substr1)) && (isWholeNumber(substr2) || isAdress2(substr2)))
+        return true;
+    }
+  }
+
+  return false;
+}
+
+//all good
+//returns 0 if its a whole number, 1 if its a decimal number, 2 if its a string
+int whatStringIsThat(std::string str)
+{
+    if(isWholeNumber(str))
+    {
+        return 1;
+    }
+    if(isDecimalNumber(str))
     {
         return 2;
     }
-
-    //check if its a string - string should start and end with "
-    if(str[0] == '"' && str[str.size() - 1] == '"')
+    if(isString(str))
     {
         return 3;
     }
-
-    //check if its a formula - formula should start with = and contain at least one operator
-    //example valid formulas:
-    //= 1 + 2
-    //= R1C1 + R2C2
-    int row1, col1, row2, col2;//assign the row and column values to these variables
-    
-    
-    
-    if(str[0] != '=' || false)//if the string starts with = and the rest is not a number
+    if(isFormula(str))
     {
-        isFormula = false;
-    }
-    {
-        isFormula = false;
-    }
-    bool hasOperator = false;
-    for(std::size_t i = 0; i < str.size(); ++i)
-    {
-        if(str[i] == '+' || str[i] == '-' || str[i] == '*' || str[i] == '/')
-        {
-            if(hasOperator == true)
-            {
-                isFormula = false;
-                i = str.size();//break the loop
-            }
-            hasOperator = true;
-            continue;
-        }
-    }
-
-
-    
+        return 4;
+    }   
     
     return 0;
 }
 
 SpreadSheet::SpreadSheet()
 {
-    std::cout<<"SpreadSheet constructor\n";
     rows = 0;
     cols = 0;
+    fileName = "";
 }
 
-//all good boss
+
+//now we good
 void SpreadSheet::addField(int row, int col, Field* field)
 {
     if(row > rows)//we are adding a a row thats new
     {
+        fields.resize(row);//resize the rows
         
+        for(std::size_t i = rows; i < fields.size(); ++i)
+        {
+            fields[i].resize(cols);//resize the columns
+            for(std::size_t j = 0; j < fields[i].size(); ++j)
+            {
+                if(fields[i][j] == nullptr)
+                fields[i][j] = new EmptyField(i + 1, j + 1);//add empty fields
+            }
+        }
         rows = row;//update the table rows
-        fields.resize(rows);//resize the rows
-
-        //we could also add emptyFields here as much as its needed
-
     }
     if(col > cols)//we are adding a new column
     {
-        
         cols = col;//update the table columns
+        colWidths.resize(cols);//resize the columns
         for(std::size_t i = 0; i < fields.size(); ++i)
         {
             fields[i].resize(cols);//resize the columns
+            for(std::size_t j = 0; j < fields[i].size(); ++j)
+            {
+                if(fields[i][j] == nullptr)
+                fields[i][j] = new EmptyField(i + 1, j + 1);//add empty fields
+            }
         }
 
     }
-    
-    fields[row - 1][col - 1] = field;
 
+    fields[row - 1][col - 1] = field;
+    
+    if(field->getLength() > colWidths[col - 1])
+    {
+        colWidths[col - 1] = field->getLength();
+    }    
 }
 
-void SpreadSheet::editField(int row, int col)
-{
-    assert(row <= rows && "Row out of bounds");
-    assert(col <= cols && "Column out of bounds");
 
+
+void SpreadSheet::editField()
+{
+    int row, col;
+    do{
+        std::cout<<"Enter row: ";
+        std::cin>>row;
+        std::cout<<"Enter column: ";
+        std::cin>>col;
+    }while(row > rows || col > cols);
     std::cout<<"Enter the new value for the field: ";
     std::string newValue;
+    std::cin.ignore();
     getline(std::cin, newValue);
 
     int result = whatStringIsThat(newValue);
+
     switch (result)
     {
         case 0://0 is incorrect
@@ -180,22 +236,35 @@ void SpreadSheet::editField(int row, int col)
             //fields[row - 1][col - 1] = f;
             break;
         }
+    }
 
-
+    //!!!IMPORTANT!!!
+    //problem is that if we change the value of the field with the longest current length 
+    //to a field with a smaller length then the column width will not be updated
+    if(colWidths[col - 1] < newValue.size())
+    {
+        colWidths[col - 1] = newValue.size();
     }
 }
 
 void SpreadSheet::print() const
 {
+    std::cout<<"Printing the table\n";
+    std::cout<<"Rows: "<<fields.size()<<" Cols: "<<fields[0].size()<<"\n";
     for(std::size_t i = 0; i < fields.size(); ++i)
     {
+        
         for(std::size_t j = 0; j < fields[i].size(); ++j)
         {
-            if(fields[i][j] != nullptr)
-            {
-                fields[i][j]->print();
-            }
+            std::cout<<"| ";
+                int numOfSpaces = colWidths[j] - fields[i][j]->getLength();
+                for(int k = 0; k < numOfSpaces; ++k)
+                {
+                    std::cout<<' ';
+                }
+                std::cout<<fields[i][j]->getValue();
         }
+        std::cout<<'|'<<std::endl;
     }
 }
 
@@ -203,6 +272,8 @@ void SpreadSheet::print() const
 
 int main()
 {
+    /*
+
     SpreadSheet ss;
     WholeNumber f(2, 3, "123"), f2(1, 2, "456"),f3(5, 5, "789");
     //std::vector<std::vector<Field>> fields;
@@ -249,6 +320,49 @@ int main()
     std::cout<<whatStringIsThat("\"12.3 text with space \"")<<std::endl;
     std::cout<<whatStringIsThat("\"12.3")<<std::endl;
     std::cout<<whatStringIsThat("12.3\"")<<std::endl;
+    
+    std::cout<<std::boolalpha<<isAdress2("R1C1")<<std::endl;
+    std::cout<<std::boolalpha<<isAdress2("R1C2")<<std::endl;
+    std::cout<<std::boolalpha<<isAdress2("R8C4")<<std::endl;
+    std::cout<<std::boolalpha<<isAdress2("R1C12")<<std::endl;
+    std::cout<<std::boolalpha<<isAdress2("R10C1")<<std::endl;
+    std::cout<<std::boolalpha<<isAdress2("R1CD")<<std::endl;
+    std::cout<<std::boolalpha<<isAdress2("R1C")<<std::endl;
+    std::cout<<std::boolalpha<<isAdress2("R1C2D")<<std::endl;
+    std::cout<<std::boolalpha<<isAdress2("R1c2")<<std::endl;
+    //std::cout<<std::boolalpha<<isFormula("=1*0")<<std::endl;
+    //std::cout<<std::boolalpha<<isFormula("=1+2")<<std::endl;
+    //std::cout<<std::boolalpha<<isFormula("=R1C1+5")<<std::endl;
+    //std::cout<<std::boolalpha<<isFormula("=R1C1+R2C2")<<std::endl;
+    //std::cout<<std::boolalpha<<isFormula("=4+R3C3")<<std::endl;
+    //std::cout<<std::boolalpha<<isFormula("=R1C1+R2C2")<<std::endl;
+    */
 
+    SpreadSheet ss;
+    WholeNumber f(1,1,"111"),f2(1,2,"22"),f3(1,3,"333");
+    WholeNumber f4(2,1,"4"),f5(2,2,"5"),f6(2,3,"6");
+    WholeNumber f7(3,1,"7"),f8(3,2,"8"),f9(3,3,"9");
+    WholeNumber f10(10,1,"10"),f11(1,12,"11"),f12(11,15,"12");
+
+    ss.addField(1, 1, &f);
+    ss.addField(1, 2, &f2);
+    ss.addField(1, 3, &f3);
+    ss.addField(2, 1, &f4);
+    ss.addField(2, 2, &f5);
+    ss.addField(2, 3, &f6);
+    ss.addField(3, 1, &f7);
+    ss.addField(3, 2, &f8);
+    ss.addField(3, 3, &f9);
+
+    ss.addField(10, 1, &f10);
+    ss.addField(1, 12, &f11);
+    ss.addField(11,15, &f12);
+
+    ss.print();
+
+    ss.editField();
+    ss.editField();
+
+    ss.print();
     return 0;
 }

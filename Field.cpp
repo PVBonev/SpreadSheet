@@ -55,6 +55,7 @@ int main()
     Field f(1, 1, "123", Type::WholeNum), f2(2, 2, "456", Type::WholeNum);
     f.print();
     f2.print();
+    std::cout<<f.getValue()<<std::endl;
 
     return 0;
 }

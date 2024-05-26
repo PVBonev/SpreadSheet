@@ -7,5 +7,5 @@ enum Type
     DecimalNum = 2,
     Text = 3,
     Formula = 4,
-    Empty = 5        
+    Empty = 5       
 };

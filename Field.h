@@ -21,7 +21,8 @@ public:
     Field(int row, int column, std::string value, Type type);
     
     void setValue(std::string value);
-    std::string getValue() const;
+    virtual std::string getValue() const;
+    virtual int getTypeId() const { return (int)type; }
 
     //int getTypeId() const { return (int)type; }//this or maybe a more complicated version that checks the string and returns the type accordingly
 
@@ -30,6 +31,7 @@ public:
 
     int getRow() const { return row; }
     int getCol() const { return column; }
+    int getLength() const { return value.size(); }
     
     /*//static Field createWholeNumber(int row, int column);
 

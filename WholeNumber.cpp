@@ -10,9 +10,10 @@ WholeNumber::WholeNumber(int row, int column, std::string value) : Field(row, co
 void WholeNumber::print() const 
 {
     //Field::printO(
-    std::cout<<"Printing whole number field\n";
-    std::cout<<"Row: "<<getRow()<<" Column: "<<getCol()<<std::endl;
-    std::cout << "The integer value + 10 is: " << std::stoi(value) + 10 << std::endl;
+    //std::cout<<"Printing whole number field\n";
+    //std::cout<<"["<<getRow()<<"]["<<getCol()<<"] = "<<value<<std::endl;
+
+    std::cout<<std::stoi(value);
 }
 /*
 int main()
