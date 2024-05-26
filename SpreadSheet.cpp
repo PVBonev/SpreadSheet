@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cassert>
-#include <string>//
+#include <fstream>
 #include "SpreadSheet.h"
 #include "Field.h"
 #include "WholeNumber.h"
@@ -144,7 +144,6 @@ SpreadSheet::SpreadSheet()
     fileName = "";
 }
 
-
 //now we good
 void SpreadSheet::addField(int row, int col, Field* field)
 {
@@ -186,8 +185,6 @@ void SpreadSheet::addField(int row, int col, Field* field)
         colWidths[col - 1] = field->getLength();
     }    
 }
-
-
 
 void SpreadSheet::editField()
 {
@@ -268,6 +265,33 @@ void SpreadSheet::print() const
     }
 }
 
+void SpreadSheet::saveToFile(std::string fileName)
+{
+    //format will be
+    //rows cols: fields[0][0]->getValue() fields[0][1]->getValue() ... fields[0][cols - 1]->getValue()
+    //fields[1][0]->getValue() fields[1][1]->getValue() ... fields[1][cols - 1]->getValue()
+    //...
+    //fields[rows - 1][0]->getValue() fields[rows - 1][1]->getValue() ... fields[rows - 1][cols - 1]->getValue()
+
+    //override previous content in file
+    std::ofstream file(fileName, std::ios::trunc);
+    if(file.is_open())
+    {
+        file<<rows<<' '<<cols<<": ";
+        for(std::size_t i = 0; i < fields.size(); ++i)
+        {
+            for(std::size_t j = 0; j < fields[i].size(); ++j)
+            {
+                file<<fields[i][j]->getValue()<<", ";
+            }
+            file<<'\n';
+        }
+    }
+    else
+    {
+        std::cout<<"Could not open the file\n";
+    }
+}
 
 
 int main()
@@ -360,9 +384,10 @@ int main()
 
     ss.print();
 
-    ss.editField();
-    ss.editField();
+    //ss.editField();
+    //ss.editField();
+    //ss.print();
 
-    ss.print();
+    ss.saveToFile("test.txt");
     return 0;
 }
