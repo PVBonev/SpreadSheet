@@ -6,8 +6,6 @@ class EmptyField : public Field
 public:
     EmptyField(int row, int column);
 
-    std::string getValue() const;
-
-    virtual void print() const override;
+    std::string getValueStr() const;
 };
 

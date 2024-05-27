@@ -17,17 +17,14 @@ protected:
     
 
 public:
-    Field();
     Field(int row, int column, std::string value, Type type);
     
-    void setValue(std::string value);
-    virtual std::string getValue() const;
-    virtual int getTypeId() const { return (int)type; }
+    virtual std::string getValueStr() const;
 
     //int getTypeId() const { return (int)type; }//this or maybe a more complicated version that checks the string and returns the type accordingly
 
     //for tests
-    virtual void print() const;// = 0; perhaps
+    void print() const; //perhaps
 
     int getRow() const { return row; }
     int getCol() const { return column; }

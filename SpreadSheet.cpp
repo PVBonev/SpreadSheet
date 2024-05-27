@@ -314,7 +314,7 @@ void SpreadSheet::print() const
             {
                 std::cout<<' ';
             }
-            std::cout<<fields[i][j]->getValue();
+            std::cout<<fields[i][j]->getValueStr();
         }
         std::cout<<'|'<<std::endl;
     }
@@ -337,7 +337,7 @@ void SpreadSheet::saveToFile(std::string fileName)
         {
             for(std::size_t j = 0; j < fields[i].size(); ++j)
             {
-                file<<fields[i][j]->getValue()<<",";
+                file<<fields[i][j]->getValueStr()<<",";
             }
             file<<'\n';
         }
@@ -565,6 +565,7 @@ int main()
     ss.addField(1, 5, &f11);
     ss.addField(5,5, &f12);
 
+    std::cout<<"Printing ss\n";
     ss.print();
 
     //ss.editField();
@@ -575,12 +576,13 @@ int main()
 
     SpreadSheet ss2;
     ss2.loadFromFile("test.txt");
+    std::cout<<"Printing ss2\n";
     ss2.print();
     ss2.saveToFile("test2.txt");
 
-    //ss.addField(4, 4, new WholeNumber(4, 4, "123"));
-    //ss.addField(4, 5, new WholeNumber(4, 5, "124"));
-    //ss.addField(2,2, new WholeNumber(2, 2, "125"));
-    //ss.print();
+    std::cout<<"Printing ss updated\n";
+    ss.loadFromFile("test2.txt");
+    ss.print();
+    
     return 0;
 }

@@ -7,10 +7,11 @@
 
 WholeNumber::WholeNumber(int row, int column, std::string value) : Field(row, column, value, Type::WholeNum){}
 
-void WholeNumber::print() const 
+int WholeNumber::getValue() const
 {
-    std::cout<<"["<<getRow()<<"]["<<getCol()<<"] = "<<value<<std::endl;
+    return std::stoi(value);
 }
+
 /*
 int main()
 {

@@ -8,7 +8,6 @@ class WholeNumber : public Field
 public:
     WholeNumber(int row, int column, std::string value);
 
-    virtual void print() const override;
-
+    int getValue() const;
 
 };
