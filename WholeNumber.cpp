@@ -1,6 +1,4 @@
 #include <iostream>
-#include <string>
-#include <vector>//for testing
 #include "WholeNumber.h"
 
 //WholeNumber::WholeNumber(int row, int column, int value) : Field(row, column, Type::WholeNum), value(value) {}

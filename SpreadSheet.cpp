@@ -2,152 +2,10 @@
 #include <cassert>
 #include <fstream>
 #include "SpreadSheet.h"
-#include "Field.h"
 #include "WholeNumber.h"
 #include "EmptyField.h"
+#include "Helpers.h"
 
-//all good
-bool isWholeNumber(std::string str)
-{
-    for(std::size_t i = 0; i < str.size(); ++i)
-    {
-        if(str[i] < '0' || str[i] > '9')
-        {
-            return false;
-        }
-    }
-    return true;
-}
-//all good
-bool isDecimalNumber(std::string str)
-{
-    bool hasDot = false;
-    for(std::size_t i = 0; i < str.size(); ++i)
-    {
-        if(str[i] == '.')
-        {
-            if(hasDot == true)
-            {
-                return false;
-            }
-            hasDot = true;
-            continue;
-        }
-        if(str[i] < '0' || str[i] > '9')
-        {
-            return false;
-        }
-    }
-    return true;
-}
-//all good
-bool isString(std::string str)
-{
-    if(str[0] == '"' && str[str.size() - 1] == '"')
-    {
-        return true;
-    }
-    return false;
-}
-
-//weak and obsolete
-//only works for R1C1 format(1 digit row and 1 digit column)
-bool isAdress(std::string str)
-{
-    if(str[0] == 'R' && str[2] == 'C' && str[1] >= '0' && str[1] <= '9' && str[3] >= '0' && str[3] <= '9')
-    {
-        return true;
-    }
-    return false;
-
-}
-
-//all good boss
-bool isAdress2(std::string str)
-{
-    
-    if(str[0] == 'R' && str.size() >=4)
-    {
-        std::size_t pos = str.find_first_of('C');
-
-        if(pos != std::string::npos)
-        {
-            std::string row = str.substr(1, pos - 1);//the actual number part
-            std::string col = str.substr(pos + 1);//the actual number part
-
-            std::cout<<"substrings 1 and 2:"<<row<<" "<<col<<std::endl;
-
-
-            if(isWholeNumber(row) && isWholeNumber(col))
-            {
-                if(std::stoi(row) > 0 && std::stoi(col) > 0
-                  && std::stoi(row) < 100 && std::stoi(col) < 100)
-                {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
-bool isFormula(const std::string& str) 
-{
-  if (str[0] == '=') 
-  {
-    // Find the first occurrence of any operator (+, -, *, /)
-    size_t pos = str.find_first_of("+-*/");
-
-    // Check if an operator was found
-    if (pos != std::string::npos) 
-    {
-        // Extract substrings
-        std::string substr1 = str.substr(1, pos - 1); 
-        std::string substr2 = str.substr(pos + 1);
-
-        if((isWholeNumber(substr1) || isAdress2(substr1)) && (isWholeNumber(substr2) || isAdress2(substr2)))
-        return true;
-    }
-  }
-
-  return false;
-}
-
-bool isEmpty(std::string str)
-{
-    if(str == " ")
-    {
-        return true;
-    }
-    return false;
-}
-//all good
-//returns 0 if its a whole number, 1 if its a decimal number, 2 if its a string
-int whatStringIsThat(std::string str)
-{
-    if(isWholeNumber(str))
-    {
-        return 1;
-    }
-    if(isDecimalNumber(str))
-    {
-        return 2;
-    }
-    if(isString(str))
-    {
-        return 3;
-    }
-    if(isFormula(str))
-    {
-        return 4;
-    }
-    if(isEmpty(str))
-    {
-        return 5;
-    }
-    
-    return 0;
-}
 
 SpreadSheet::SpreadSheet()
 {
@@ -156,35 +14,7 @@ SpreadSheet::SpreadSheet()
     fileN = "";
 }
 
-/*
-void SpreadSheet::addField(int row, int col, Field* field)
-{
-    if(row > rows)//we are adding a a row thats new
-    {
-        fields.resize(row);//resize the rows
-        rows = row;//update the table rows
-    }
-    if(col > cols)//we are adding a new column
-    {
-        cols = col;//update the table columns
-        colWidths.resize(cols);//resize the columns
-    }
-    for(std::size_t i = 0; i < fields.size(); ++i)
-    {
-        fields[i].resize(cols);//resize the columns
-        for(std::size_t j = 0; j < fields[i].size(); ++j)
-        {
-            if(fields[i][j] == nullptr)
-                fields[i][j] = new EmptyField(i + 1, j + 1);//add empty fields
-        }
-    }
-    delete fields[row - 1][col - 1]; // Delete the old field
-    fields[row - 1][col - 1] = field; // Assign the new field
-    if(field->getLength() > colWidths[col - 1])    {
-        colWidths[col - 1] = field->getLength();
-    }    
-}
-*/
+
 //now we good
 void SpreadSheet::addField(int row, int col, Field* field)
 {
@@ -243,6 +73,29 @@ void SpreadSheet::editField()
     getline(std::cin, newValue);
 
     int result = whatStringIsThat(newValue);
+    if(result != 0 && fields[row - 1][col - 1]->getLength() == colWidths[col - 1] && newValue.size() < colWidths[col - 1])
+    {
+        //if the new value is smaller than the current value and the current value is the longest in the column
+        //then we need to update the column width
+        colWidths[col - 1] = newValue.size();//in case our value is the new longest
+        for(std::size_t i = 0; i < row; ++i)
+        {
+            if(fields[i][col - 1]->getLength() > newValue.size())
+            {
+                colWidths[col - 1] = fields[i][col - 1]->getLength();
+                break;
+            }
+        }
+        //we skip the row we are editing because there is the longest element for now
+        for(std::size_t i = row; i < fields.size(); ++i)
+        {
+            if(fields[i][col - 1]->getLength() > newValue.size())
+            {
+                colWidths[col - 1] = fields[i][col - 1]->getLength();
+                break;
+            }
+        }
+    }
 
     switch (result)
     {
@@ -286,14 +139,6 @@ void SpreadSheet::editField()
             break;
         }
     }
-
-    //!!!IMPORTANT!!!
-    //problem is that if we change the value of the field with the longest current length 
-    //to a field with a smaller length then the column width will not be updated
-    if(colWidths[col - 1] < newValue.size())
-    {
-        colWidths[col - 1] = newValue.size();
-    }
 }
 
 void SpreadSheet::print() const
@@ -322,13 +167,6 @@ void SpreadSheet::print() const
 
 void SpreadSheet::saveToFile(std::string fileName)
 {
-    //format is
-    //rows-cols: fields[0][0]->getValue() fields[0][1]->getValue() ... fields[0][cols - 1]->getValue()
-    //fields[1][0]->getValue() fields[1][1]->getValue() ... fields[1][cols - 1]->getValue()
-    //...
-    //fields[rows - 1][0]->getValue() fields[rows - 1][1]->getValue() ... fields[rows - 1][cols - 1]->getValue()
-
-    //override previous content in file
     std::ofstream file(fileName, std::ios::trunc);
     if(file.is_open())
     {
@@ -360,41 +198,9 @@ void SpreadSheet::saveToFile()
     }
 }
 
-/*
+
 void SpreadSheet::loadFromFile(std::string fileName)
 {
-    std::cout<<"Loading from file\n";
-    std::ifstream file(fileName);
-    if(file.is_open())
-    {
-        std::string line;
-        std::getline(file, line);
-        std::size_t pos = line.find_first_of('-');
-        std::size_t pos2 = line.find_first_of(':');
-        rows = std::stoi(line.substr(0, pos));
-        cols = std::stoi(line.substr(pos + 1, pos2 - pos - 1));
-        std::cout<<"Rows: "<<rows<<" Cols: "<<cols<<std::endl;
-        fields.resize(rows);
-
-        std::cout<<"Field rows: "<<fields.size()<<" Field cols: "<<fields[0].size()<<std::endl;
-
-        addField(rows, cols, new EmptyField(rows, cols));
-        std::cout<<"Field rows: "<<fields.size()<<" Field cols: "<<fields[0].size()<<std::endl;
-
-        
-    }
-    else
-    {
-        std::cout<<"Could not open the file\n";
-    }
-}
-*/
-void SpreadSheet::loadFromFile(std::string fileName)
-{
-    //format is: row-cols: fields[0][0],fields[0][1],...,fields[0][cols - 1]
-    //fields[1][0],fields[1][1],...,fields[1][cols - 1]
-    //...
-    //fields[rows - 1][0],fields[rows - 1][1],...,fields[rows - 1][cols - 1]
     std::ifstream file(fileName);
     if(file.is_open())
     {
@@ -411,7 +217,6 @@ void SpreadSheet::loadFromFile(std::string fileName)
             fields[i].resize(cols);
             for(std::size_t j = 0; j < fields[i].size(); ++j)
             {
-                //get the string from ',' symbol to the next ',' symbol or to the end of the line
                 std::getline(file, line, ',');
                 if (!file.eof() && file.peek() == '\n') // Check if the next character is a newline
                 {
@@ -422,7 +227,7 @@ void SpreadSheet::loadFromFile(std::string fileName)
                 {
                     case 0://0 is incorrect
                     {    
-                        //std::cout<<"Invalid input\n";
+                        std::cout<<"Invalid input\n";
                         break;
                     }
                     case 1://1 is whole number
@@ -476,10 +281,10 @@ void SpreadSheet::loadFromFile(std::string fileName)
 }
 
 
-
+/*
 int main()
 {
-    /*
+    
 
     SpreadSheet ss;
     WholeNumber f(2, 3, "123"), f2(1, 2, "456"),f3(5, 5, "789");
@@ -543,7 +348,7 @@ int main()
     //std::cout<<std::boolalpha<<isFormula("=R1C1+R2C2")<<std::endl;
     //std::cout<<std::boolalpha<<isFormula("=4+R3C3")<<std::endl;
     //std::cout<<std::boolalpha<<isFormula("=R1C1+R2C2")<<std::endl;
-    */
+    
 
     SpreadSheet ss;
     WholeNumber f(1,1,"111"),f2(1,2,"22"),f3(1,3,"333");
@@ -568,9 +373,9 @@ int main()
     std::cout<<"Printing ss\n";
     ss.print();
 
+    ss.editField();
     //ss.editField();
-    //ss.editField();
-    //ss.print();
+    ss.print();
 
     ss.saveToFile("test.txt");
 
@@ -586,3 +391,5 @@ int main()
     
     return 0;
 }
+
+*/

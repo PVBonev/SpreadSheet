@@ -1,5 +1,6 @@
+#pragma once
 #include <iostream>
-#include "Command.cpp"
+#include "Command.h"
 
 class HelpCommand: public Command
 {
