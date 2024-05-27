@@ -10,7 +10,7 @@ private:
     unsigned int cols;
     std::vector<std::vector<Field*>> fields;
     std::vector<int> colWidths;
-    std::string fileName;
+    std::string fileN;    
 
 public:
     SpreadSheet();
@@ -21,7 +21,4 @@ public:
     void saveToFile();
     void loadFromFile(std::string fileName);
     void print() const;
-
-    void tester();
-
 };

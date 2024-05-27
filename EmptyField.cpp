@@ -12,7 +12,7 @@ std::string EmptyField::getValue() const
 
 void EmptyField::print() const
 {
-    std::cout << "Printing empty field\n";
-    std::cout << "Row: " << getRow() << " Column: " << getCol() << " Type: " << type << std::endl;
-    std::cout << "The value is: " << value << std::endl;
+    //std::cout << "Printing empty field\n";
+    std::cout<<"["<<getRow()<<"]["<<getCol()<<"] = "<<value<<'|'<<std::endl;
+
 }
