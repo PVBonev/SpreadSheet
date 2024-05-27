@@ -2,11 +2,14 @@
 #include <string>
 #include "HelpCommand.h"
 #include "OpenCommand.h"
-//#include "SpreadSheet.h"
+//#include "CloseCommand.h"
+#include "PrintCommand.h"
+#include "EmptyCommand.h"
+
 
 void engine()
 {
-    //SpreadSheet sheet;
+    SpreadSheet sheet;
     std::string cmd;
     std::string args;
     bool inCmd = true;
@@ -14,7 +17,10 @@ void engine()
     std::string input;
     do
     {
-        std::cout<<"Enter a command:";
+        std::cout<<"\nEnter a command:";
+        cmd.clear();
+        args.clear();
+        inCmd = true;
         getline(std::cin, input);
 
         
@@ -38,8 +44,8 @@ void engine()
         //cmd.push_back('\0');
         Command* command;
 
-        std::cout <<"Entered Command:"<< cmd << std::endl;
-        std::cout <<"Entered Arguments:"<< args << std::endl;
+        std::cout<<"cmd: "<<cmd<<std::endl;
+        std::cout<<"args: "<<args<<std::endl;
 
         if(cmd.compare("help") == 0)//its not the terminating 0//cmd == "help"
         {
@@ -52,7 +58,7 @@ void engine()
             std::cout<<"open command called\n";
             command = new OpenCommand(args);
         }
-        else if(cmd.compare("plus") == 0)
+        else if(cmd.compare("close") == 0)
         {
             //command = new Plus(args);
             
@@ -64,12 +70,21 @@ void engine()
             
 
         }
+        else if(cmd.compare("print") == 0)
+        {
+            std::cout<<"print command called\n";
+            command = new PrintCommand();
+        }
+        else if(cmd.compare("exit") == 0)
+        {
+            std::cout<<"exit command called\n";
+        }
         else
         {
-            std::cout << "Invalid command\n";
+            command = new EmptyCommand();
         }
 
-        command->execute();
+        command->execute(sheet);
     }while(cmd != "exit");
 }
 

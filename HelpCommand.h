@@ -5,7 +5,7 @@
 class HelpCommand: public Command
 {
 public:
-    void execute() override
+    void execute(SpreadSheet &ss) override
     {
         std::cout << "List of commands:\n"
                 <<"open <file> - opens a file\n"
