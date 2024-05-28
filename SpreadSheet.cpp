@@ -12,6 +12,8 @@ SpreadSheet::SpreadSheet()
     rows = 0;
     cols = 0;
     fileN = "";
+    fields.resize(1);
+    fields[0].resize(1);
 }
 
 
@@ -143,9 +145,11 @@ void SpreadSheet::editField()
 
 void SpreadSheet::print() const
 {
-    std::vector<int> widths;
-    widths.resize(cols);
-
+    if(cols == 0 && rows == 0)
+    {
+        std::cout<<"Empty table\n";
+        return;
+    }
     std::cout<<"Printing the table\n";
     std::cout<<"Rows: "<<fields.size()<<" Cols: "<<fields[0].size()<<"\n";
     for(std::size_t i = 0; i < fields.size(); ++i)
@@ -278,6 +282,20 @@ void SpreadSheet::loadFromFile(std::string fileName)
     }
 
     file.close();
+}
+
+
+void SpreadSheet::close()
+{
+    rows = 0;
+    cols = 0;
+    fields.clear();
+    for(std::size_t i = 0; i < fields.size(); ++i)
+    {
+        fields[i].clear();
+    }
+    colWidths.clear();
+    fileN = "";
 }
 
 

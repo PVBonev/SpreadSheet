@@ -2,7 +2,7 @@
 #include <string>
 #include "HelpCommand.h"
 #include "OpenCommand.h"
-//#include "CloseCommand.h"
+#include "CloseCommand.h"
 #include "PrintCommand.h"
 #include "EmptyCommand.h"
 
@@ -60,15 +60,8 @@ void engine()
         }
         else if(cmd.compare("close") == 0)
         {
-            //command = new Plus(args);
-            
-            std::string firstnum = args.substr(0,1);
-            std::string secondnum = args.substr(1,2);
-            int num1 = std::stoi(firstnum);
-            int num2 = std::stoi(secondnum);
-            std::cout<<"Plus: "<<num1 + num2 <<std::endl;
-            
-
+            std::cout<<"close command called\n";
+            command = new CloseCommand();
         }
         else if(cmd.compare("print") == 0)
         {
@@ -80,7 +73,7 @@ void engine()
             std::cout<<"exit command called\n";
         }
         else
-        {
+        {   
             command = new EmptyCommand();
         }
 

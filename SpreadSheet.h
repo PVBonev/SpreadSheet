@@ -20,5 +20,6 @@ public:
     void saveToFile(std::string fileName);
     void saveToFile();
     void loadFromFile(std::string fileName);
+    void close();
     void print() const;
 };
