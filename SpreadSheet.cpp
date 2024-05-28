@@ -2,8 +2,9 @@
 #include <cassert>
 #include <fstream>
 #include "SpreadSheet.h"
-#include "WholeNumber.h"
+#include "WholeNumberField.h"
 #include "EmptyField.h"
+#include "StringField.h"
 #include "Helpers.h"
 
 
