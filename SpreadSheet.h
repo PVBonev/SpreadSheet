@@ -12,10 +12,7 @@ private:
     std::vector<int> colWidths;
     std::string fileN;    
 
-    double calculateFormula(std::string formula) const;//its private
-
-    void updateSpreadSheet();//goes through the spreadSheet and updates the column widths and recalculates the formulas
-    
+    double calculateFormula(std::string formula) const;//its private    
 
 public:
     SpreadSheet();
@@ -27,4 +24,6 @@ public:
     void loadFromFile(std::string fileName);
     void close();
     void print() const;
+
+    void updateSpreadSheet();
 };

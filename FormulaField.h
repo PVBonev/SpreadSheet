@@ -8,7 +8,7 @@ class Formula : public Field
 private:
     double result = 0;
 public:
-    Formula(int row, int column, std::string value);
+    Formula(int row, int column, std::string value,double result);
 
     std::string print() const override;
 
@@ -18,13 +18,10 @@ public:
 
     Type getType() const override;
 
-    //double getValue() const override;
+    double getValue() const override;
 };
 
-Formula::Formula(int row, int column, std::string value) : Field(row, column, value, Type::FormulaField)
-{
-    std::cout<<"Row: "<<row<<" Column: "<<column<<" Value: "<<value<<" Result: "<<result<<std::endl;
-}
+Formula::Formula(int row, int column, std::string value,double result) : Field(row, column, value, Type::FormulaField), result(result) {}
 
 std::string Formula::print() const
 {
@@ -46,7 +43,7 @@ Type Formula::getType() const
     return Type::FormulaField;
 }
 
-//double Formula::getValue() const
-//{
-//    return result;
-//}
+double Formula::getValue() const
+{
+    return result;
+}

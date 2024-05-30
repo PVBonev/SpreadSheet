@@ -20,7 +20,7 @@ void engine()
     std::string input;
     do
     {
-        std::cout<<"\nEnter a command:";
+        std::cout<<"\nEnter command:";
         cmd.clear();
         args.clear();
         inCmd = true;

@@ -9,6 +9,8 @@ public:
     void execute(SpreadSheet &ss) override
     {
         std::cout << "Print command called\n";
+        ss.updateSpreadSheet();
+        ss.updateSpreadSheet();
         ss.print();
     }
     

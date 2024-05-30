@@ -50,7 +50,6 @@ double SpreadSheet::calculateFormula(std::string formula) const
         std::size_t pos = second.find_first_of('C');
         int row = std::stoi(second.substr(1, pos - 1));
         int col = std::stoi(second.substr(pos + 1));
-
         val2 = fields[row - 1][col - 1]->getValue();
     }
 
@@ -140,6 +139,8 @@ void SpreadSheet::editField()
         std::cin>>row;
         std::cout<<"Enter column: ";
         std::cin>>col;
+        if(row > rows || col > cols)
+        std::cout<<"Invalid row or column\n";
     }while(row > rows || col > cols);
 
     std::cout<<"Enter the new value for the field: ";
@@ -148,30 +149,6 @@ void SpreadSheet::editField()
     getline(std::cin, newValue);
 
     int result = whatStringIsThat(newValue);
-
-    //if(result != 0 && fields[row - 1][col - 1]->getLength() == colWidths[col - 1] && newValue.size() < colWidths[col - 1])
-    //{
-    //    //if the new value is smaller than the current value and the current value is the longest in the column
-    //    //then we need to update the column width
-    //    colWidths[col - 1] = newValue.size();//in case our value is the new longest
-    //    for(std::size_t i = 0; i < row; ++i)
-    //    {
-    //        if(fields[i][col - 1]->getLength() > newValue.size())
-    //        {
-    //            colWidths[col - 1] = fields[i][col - 1]->getLength();
-    //            break;
-    //        }
-    //    }
-    //    //we skip the row we are editing because there is the longest element for now
-    //    for(std::size_t i = row; i < fields.size(); ++i)
-    //    {
-    //        if(fields[i][col - 1]->getLength() > newValue.size())
-    //        {
-    //            colWidths[col - 1] = fields[i][col - 1]->getLength();
-    //            break;
-    //        }
-    //    }
-    //}
 
     switch (result)
     {
@@ -206,8 +183,9 @@ void SpreadSheet::editField()
         }
         case 4://4 is formula
         {
-            Field* f = new Formula(row, col, newValue);
+            Field* f = new Formula(row, col, newValue,calculateFormula(newValue));
             fields[row - 1][col - 1] = f;
+            
             break;
         }
         case 5://5 is empty
@@ -335,8 +313,7 @@ void SpreadSheet::loadFromFile(std::string fileName)
                     }
                     case 4://4 is formula
                     {
-                        std::cout<<"We got a formula";
-                        Field* f = new Formula(i + 1, j + 1, line);//not yet implemented
+                        Field* f = new Formula(i + 1, j + 1, line,0);//not yet implemented
                         fields[i][j] = f;
                         break;
                     }
