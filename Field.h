@@ -10,32 +10,16 @@ protected:
     std::string value;//maybe we can do that for easier spreadsheet class use
     Type type;
     //maybe new type for empty cell and by default we set all Fields to empty cell
-    //new class empty cell?
-
-    //bool isValid(std::string value) const;
-
-    
+    //new class empty cell?    
 
 public:
     Field(int row, int column, std::string value, Type type);
     
     virtual std::string getValueStr() const;
+    virtual std::string print() const;
+    virtual double getValue() const;
 
-    //int getTypeId() const { return (int)type; }//this or maybe a more complicated version that checks the string and returns the type accordingly
+    virtual int getLength() const;
 
-    //for tests
-    void print() const; //perhaps
-
-    int getRow() const { return row; }
-    int getCol() const { return column; }
-    int getLength() const { return value.size(); }
-    
-    /*//static Field createWholeNumber(int row, int column);
-
-    //static Field createDecimalNumber(int row, int column);
-
-    //static Field createText(int row, int column);
-
-    //static Field createFormula(int row, int column);
-    */
+    virtual Type getType() const =0;
 };

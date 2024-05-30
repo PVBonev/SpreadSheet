@@ -5,6 +5,9 @@
 #include "CloseCommand.h"
 #include "PrintCommand.h"
 #include "EmptyCommand.h"
+#include "SaveAsCommand.h"
+#include "SaveCommand.h"
+#include "EditCommand.h"
 
 
 void engine()
@@ -62,6 +65,21 @@ void engine()
         {
             std::cout<<"close command called\n";
             command = new CloseCommand();
+        }
+        else if(cmd.compare("save") == 0)
+        {
+            std::cout<<"save command called\n";
+            command = new SaveCommand();
+        }
+        else if(cmd.compare("saveas") == 0)
+        {
+            std::cout<<"saveas command called\n";
+            command = new SaveAsCommand(args);
+        }
+        else if(cmd.compare("edit") == 0)
+        {
+            std::cout<<"edit command called\n";
+            command = new EditCommand();
         }
         else if(cmd.compare("print") == 0)
         {

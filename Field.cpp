@@ -10,9 +10,21 @@ std::string Field::getValueStr() const
     return value;
 }
 
-void Field::print() const
+std::string Field::print() const
 {
-    std::cout<<'['<<getRow()<<','<<getCol()<<"] "<<value<<std::endl;
+    //if(type == Type::StringField)
+    //    return value.substr(1, value.size() - 2);
+    return value;
+}
+
+double Field::getValue() const
+{
+    return 0;//by default
+}
+
+int Field::getLength() const
+{
+    return value.size();
 }
 
 /*

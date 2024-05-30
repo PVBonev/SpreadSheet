@@ -3,9 +3,9 @@
 enum Type
 {
     Incorrect = 0,
-    WholeNum = 1,
-    DecimalNum = 2,
-    Text = 3,
-    Formula = 4,
+    WholeNumField = 1,
+    DecimalNumField = 2,
+    StringField = 3,
+    FormulaField = 4,
     Empty = 5       
 };

@@ -7,5 +7,19 @@ class WholeNumber : public Field
 public:
     WholeNumber(int row, int column, std::string value);
 
-    int getValue() const;
+    double getValue() const override;
+
+    Type getType() const override;
 };
+
+WholeNumber::WholeNumber(int row, int column, std::string value) : Field(row, column, value, Type::WholeNumField){}
+
+double WholeNumber::getValue() const
+{
+    return std::stoi(value);
+}
+
+Type WholeNumber::getType() const
+{
+    return Type::WholeNumField;
+}

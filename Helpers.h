@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <string>
 
@@ -13,6 +14,7 @@ bool isWholeNumber(std::string str)
     }
     return true;
 }
+
 //all good
 bool isDecimalNumber(std::string str)
 {
@@ -70,13 +72,10 @@ bool isAdress2(std::string str)
             std::string row = str.substr(1, pos - 1);//the actual number part
             std::string col = str.substr(pos + 1);//the actual number part
 
-            std::cout<<"substrings 1 and 2:"<<row<<" "<<col<<std::endl;
-
-
             if(isWholeNumber(row) && isWholeNumber(col))
             {
                 if(std::stoi(row) > 0 && std::stoi(col) > 0
-                  && std::stoi(row) < 100 && std::stoi(col) < 100)
+                  && std::stoi(row) < 10000 && std::stoi(col) < 10000)
                 {
                     return true;
                 }
@@ -100,6 +99,7 @@ bool isFormula(const std::string& str)
         std::string substr1 = str.substr(1, pos - 1); 
         std::string substr2 = str.substr(pos + 1);
 
+        // || isDecimalNumber
         if((isWholeNumber(substr1) || isAdress2(substr1)) && (isWholeNumber(substr2) || isAdress2(substr2)))
         return true;
     }
@@ -142,4 +142,27 @@ int whatStringIsThat(std::string str)
     }
     
     return 0;
+}
+
+
+std::string removeZeros(std::string value)// recieve 123.5000000 ->123.5
+{
+    for(std::size_t i = value.size() - 1; i >= 0; --i)
+    {
+        if(value[i] == '0')
+        {
+            value.pop_back();
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if(value[value.size() - 1] == '.')
+    {
+        value.pop_back();
+    }
+    
+    return value;
 }
