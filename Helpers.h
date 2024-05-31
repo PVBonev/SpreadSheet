@@ -100,7 +100,8 @@ bool isFormula(const std::string& str)
         std::string substr2 = str.substr(pos + 1);
 
         // || isDecimalNumber
-        if((isWholeNumber(substr1) || isAdress2(substr1)) && (isWholeNumber(substr2) || isAdress2(substr2)))
+        if((isWholeNumber(substr1) || isDecimalNumber(substr1) || isAdress2(substr1)) 
+        && (isWholeNumber(substr2) || isDecimalNumber(substr2) ||isAdress2(substr2)))
         return true;
     }
   }

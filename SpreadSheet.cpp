@@ -6,6 +6,7 @@
 #include "EmptyField.h"
 #include "StringField.h"
 #include "FormulaField.h"
+#include "DecimalNumberField.h"
 #include "Helpers.h"
 
 
@@ -131,21 +132,61 @@ void SpreadSheet::addField(int row, int col, Field* field)
 }
 
 
-void SpreadSheet::editField()
+void SpreadSheet::editField(int row,int col, std::string formula)
 {
-    int row, col;
-    do{
-        std::cout<<"Enter row: ";
-        std::cin>>row;
-        std::cout<<"Enter column: ";
-        std::cin>>col;
-        if(row > rows || col > cols)
-        std::cout<<"Invalid row or column\n";
-    }while(row > rows || col > cols);
+    std::cout<<"new value: "<<formula<<std::endl;
+    int result = whatStringIsThat(formula);
+    std::cout<<"result: "<<result<<std::endl;
 
-    std::cout<<"Enter the new value for the field: ";
+    switch (result)
+    {
+        case 0://0 is incorrect
+        {    
+            std::cout<<"Invalid input\n";
+            //Field* f = new EmptyField(row, col);
+            //fields[row - 1][col - 1] = f;
+            break;
+        }
+        case 1://1 is whole number
+        {
+            Field* f = new WholeNumber(row, col, formula);
+            fields[row - 1][col - 1] = f;
+            break;
+        }
+        case 2://2 is decimal number
+        {
+            Field* f = new DecimalNumberField(row, col, formula);
+            fields[row - 1][col - 1] = f;
+            break;
+        }
+        case 3://3 is string
+        {
+            Field* f = new String(row, col, formula);
+            fields[row - 1][col - 1] = f;
+            break;
+        }
+        case 4://4 is formula
+        {
+            Field* f = new Formula(row, col, formula,calculateFormula(formula));
+            fields[row - 1][col - 1] = f;
+            
+            break;
+        }
+        case 5://5 is empty
+        {
+            Field* f = new EmptyField(row, col);
+            fields[row - 1][col - 1] = f;
+            break;
+        }
+    }
+
+    updateSpreadSheet();
+}
+
+void SpreadSheet::editField(int row, int col)
+{
+    std::cout<<"new value: ";
     std::string newValue;
-    std::cin.ignore();
     getline(std::cin, newValue);
 
     int result = whatStringIsThat(newValue);
@@ -163,16 +204,89 @@ void SpreadSheet::editField()
         {
             Field* f = new WholeNumber(row, col, newValue);
             fields[row - 1][col - 1] = f;
-            if(colWidths[col - 1] < newValue.size())
-            {
-                colWidths[col - 1] = newValue.size();
-            }
             break;
         }
         case 2://2 is decimal number
         {
-            //Field* f = new DecimalNum(row, col, newValue);//not yet implemented
+            Field* f = new DecimalNumberField(row, col, newValue);
+            fields[row - 1][col - 1] = f;
+            break;
+        }
+        case 3://3 is string
+        {
+            Field* f = new String(row, col, newValue);
+            fields[row - 1][col - 1] = f;
+            break;
+        }
+        case 4://4 is formula
+        {
+            Field* f = new Formula(row, col, newValue,calculateFormula(newValue));
+            fields[row - 1][col - 1] = f;
+            
+            break;
+        }
+        case 5://5 is empty
+        {
+            Field* f = new EmptyField(row, col);
+            fields[row - 1][col - 1] = f;
+            break;
+        }
+    }
+
+    updateSpreadSheet();
+}
+
+
+void SpreadSheet::editField()
+{
+    std::string rowStr, colStr;
+    int row = 0, col = 0;
+    do{
+        std::cout<<"row: ";
+        std::cin>>rowStr;
+        std::cout<<"column: ";
+        std::cin>>colStr;
+        if(!isWholeNumber(rowStr) || !isWholeNumber(colStr))
+        {
+            std::cout<<"Invalid input\n";
+            return;
+        }
+
+        row = std::stoi(rowStr);
+        col = std::stoi(colStr);
+        if(row > rows || col > cols)
+        std::cout<<"Invalid row or column\n";
+    }while(row > rows || col > cols);
+
+    
+
+    std::cout<<"new value: ";
+    std::string newValue;
+    std::cin.ignore();
+    getline(std::cin, newValue);
+
+
+    int result = whatStringIsThat(newValue);
+
+    switch (result)
+    {
+        case 0://0 is incorrect
+        {    
+            std::cout<<"Invalid input\n";
+            //Field* f = new EmptyField(row, col);
             //fields[row - 1][col - 1] = f;
+            break;
+        }
+        case 1://1 is whole number
+        {
+            Field* f = new WholeNumber(row, col, newValue);
+            fields[row - 1][col - 1] = f;
+            break;
+        }
+        case 2://2 is decimal number
+        {
+            Field* f = new DecimalNumberField(row, col, newValue);
+            fields[row - 1][col - 1] = f;
             break;
         }
         case 3://3 is string
@@ -229,7 +343,6 @@ void SpreadSheet::saveToFile(std::string fileName) const
     std::ofstream file(fileName, std::ios::trunc);
     if(file.is_open())
     {
-        std::cout<<"Saving to file\n";
         file<<rows<<'-'<<cols<<":\n";
         for(std::size_t i = 0; i < fields.size(); ++i)
         {
@@ -264,7 +377,6 @@ void SpreadSheet::loadFromFile(std::string fileName)
     std::ifstream file(fileName);
     if(file.is_open())
     {
-        std::cout<<"Loading from file\n";
         std::string line;
         std::getline(file, line);
         std::size_t pos = line.find_first_of('-');
@@ -301,8 +413,8 @@ void SpreadSheet::loadFromFile(std::string fileName)
                     }
                     case 2://2 is decimal number
                     {
-                        //Field* f = new DecimalNum(i + 1, j + 1, line);//not yet implemented
-                        //fields[i][j] = f;
+                        Field* f = new DecimalNumberField(i + 1, j + 1, line);//not yet implemented
+                        fields[i][j] = f;
                         break;
                     }
                     case 3://3 is string

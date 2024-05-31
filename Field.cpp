@@ -12,8 +12,6 @@ std::string Field::getValueStr() const
 
 std::string Field::print() const
 {
-    //if(type == Type::StringField)
-    //    return value.substr(1, value.size() - 2);
     return value;
 }
 

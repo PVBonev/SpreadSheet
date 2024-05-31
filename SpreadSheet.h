@@ -18,6 +18,8 @@ public:
     SpreadSheet();
 
     void addField(int row, int col, Field* field);
+    void editField(int row, int col, std::string value);
+    void editField(int row, int col);
     void editField();
     void saveToFile(std::string fileName) const;
     void saveToFile() const;

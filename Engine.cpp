@@ -8,6 +8,7 @@
 #include "SaveAsCommand.h"
 #include "SaveCommand.h"
 #include "EditCommand.h"
+#include "ExamplesCommand.h"
 
 
 void engine()
@@ -16,11 +17,13 @@ void engine()
     std::string cmd;
     std::string args;
     bool inCmd = true;
+    bool closed = true;
 
+    std::cout<<"Welcome to Peci's SpreadSheet \n\ntype \"help\" for a list of commands and \"examples\" for example fields\n";
     std::string input;
     do
     {
-        std::cout<<"\nEnter command:";
+        std::cout<<"\n>";
         cmd.clear();
         args.clear();
         inCmd = true;
@@ -44,47 +47,51 @@ void engine()
             }
         }
 
+        std::cout<<"cmd: "<<cmd<<"\n";
+        std::cout<<"args: "<<args<<"\n";
         //cmd.push_back('\0');
         Command* command;
 
-        std::cout<<"cmd: "<<cmd<<std::endl;
-        std::cout<<"args: "<<args<<std::endl;
-
         if(cmd.compare("help") == 0)//its not the terminating 0//cmd == "help"
         {
-            std::cout<<"help command called\n";
-            command = new HelpCommand();
-            
+            command = new HelpCommand();            
         }
         else if(cmd.compare("open") == 0)
         {
-            std::cout<<"open command called\n";
             command = new OpenCommand(args);
+            closed = false;
         }
         else if(cmd.compare("close") == 0)
         {
-            std::cout<<"close command called\n";
             command = new CloseCommand();
+            closed = true;
         }
         else if(cmd.compare("save") == 0)
         {
-            std::cout<<"save command called\n";
             command = new SaveCommand();
         }
         else if(cmd.compare("saveas") == 0)
         {
-            std::cout<<"saveas command called\n";
             command = new SaveAsCommand(args);
         }
         else if(cmd.compare("edit") == 0)
         {
-            std::cout<<"edit command called\n";
-            command = new EditCommand();
+            if(closed)
+            {
+                std::cout<<"No file is open\n";
+                command = new EmptyCommand();
+            } else
+            {
+                command = new EditCommand(args);
+            }
         }
         else if(cmd.compare("print") == 0)
         {
-            std::cout<<"print command called\n";
             command = new PrintCommand();
+        }
+        else if(cmd.compare("examples") == 0)
+        {
+            command = new ExamplesCommand();
         }
         else if(cmd.compare("exit") == 0)
         {
@@ -104,3 +111,5 @@ int main()
     engine();
     return 0;
 }
+
+//when spreadsheet is closed do not allow editing
