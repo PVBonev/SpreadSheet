@@ -13,6 +13,7 @@ public:
                 <<"save - saves the currently open file\n"
                 <<"saveas <file> - saves the currently open file in <file>\n"
                 <<"edit or edit <adress> or edit <adress>: <content> - edits the content of a cell\n"
+                <<"resize - resizes the table\n"
                 <<"print - prints the table\n"
                 <<"help - prints this information\n"
                 <<"examples - prints examples of fields\n"

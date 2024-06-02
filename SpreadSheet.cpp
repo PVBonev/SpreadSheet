@@ -12,7 +12,31 @@
 #include "Helpers.h"
 
 
+void SpreadSheet::copy(const SpreadSheet& other)
+{
+    rows = other.rows;
+    cols = other.cols;
+    for(std::size_t i = 0; i < other.fields.size(); ++i)
+    {
+        for(std::size_t j = 0; j < other.fields[i].size(); ++j)
+        {
+            fields[i][j] = other.fields[i][j]->clone();
+        }
+    }
+    colWidths = other.colWidths;
+    fileN = other.fileN;
+} 
 
+void SpreadSheet::erase()
+{
+    for(std::size_t i = 0; i < fields.size(); ++i)
+    {
+        for(std::size_t j = 0; j < fields[i].size(); ++j)
+        {
+            delete fields[i][j];
+        }
+    }
+}
 
 SpreadSheet::SpreadSheet()
 {
@@ -23,7 +47,27 @@ SpreadSheet::SpreadSheet()
     fields[0].resize(1);
 }
 
-double SpreadSheet::calculateFormula(std::string formula) const
+SpreadSheet::SpreadSheet(const SpreadSheet& other)
+{
+    copy(other);
+}
+
+SpreadSheet& SpreadSheet::operator=(const SpreadSheet& other)
+{
+    if(this != &other)
+    {
+        erase();
+        copy(other);
+    }
+    return *this;
+}
+
+SpreadSheet::~SpreadSheet()
+{
+    erase();
+}
+
+double SpreadSheet::calculateFormula(const std::string &formula) const
 {
     double val1 = 0,val2 = 0;
 
@@ -101,8 +145,8 @@ void SpreadSheet::updateSpreadSheet()
     }
 }
 
-//now we good
-void SpreadSheet::addField(int row, int col, Field* field)
+//not used
+/*void SpreadSheet::addField(int row, int col,const Field* field)
 {
     if(row > rows)//we are adding a a row thats new
     {
@@ -142,7 +186,7 @@ void SpreadSheet::addField(int row, int col, Field* field)
         colWidths[col - 1] = field->getLength();
     }    
 }
-
+//not used
 void SpreadSheet::addField()
 {
     std::string rowStr, colStr;
@@ -223,11 +267,12 @@ void SpreadSheet::addField()
     editField(row, col);       
     
 }
+*/
 
-void SpreadSheet::editField(int row,int col, std::string value)
+void SpreadSheet::editField(int row,int col, std::string &value)
 {
     int result = whatStringIsThat(value);
-
+    
     switch (result)
     {
         case 0://0 is incorrect
@@ -360,8 +405,7 @@ void SpreadSheet::print() const
     }
 }
 
-//look for version that dooesn't write all the ',' at the end of the line
-void SpreadSheet::saveToFile(std::string fileName) const
+void SpreadSheet::saveToFile(const std::string &fileName) const
 {
     std::ofstream file(fileName, std::ios::trunc);
     if(file.is_open())
@@ -378,7 +422,7 @@ void SpreadSheet::saveToFile(std::string fileName) const
     }
     else
     {
-        std::cout<<"Could not open the file\n";
+        std::cerr<<"Could not open the file\n";
     }
 }
 
@@ -386,7 +430,7 @@ void SpreadSheet::saveToFile() const
 {
     if(fileN == "")
     {
-        std::cout<<"Error: no file name\n";
+        std::cerr<<"Error: no file name\n";
     }
     else
     {
@@ -394,8 +438,7 @@ void SpreadSheet::saveToFile() const
     }
 }
 
-
-void SpreadSheet::loadFromFile(std::string fileName)
+void SpreadSheet::loadFromFile(const std::string &fileName)
 {
     std::ifstream file(fileName);
     if(file.is_open())
@@ -490,14 +533,13 @@ void SpreadSheet::loadFromFile(std::string fileName)
     }
     else
     {
-        std::cout<<"Could not open the file\n";
+        std::cerr<<"Could not open the file\n";
     }
 
     file.close();
 
     updateSpreadSheet();
 }
-
 
 void SpreadSheet::close()
 {

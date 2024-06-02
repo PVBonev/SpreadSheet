@@ -22,4 +22,8 @@ public:
     virtual int getLength() const;
 
     virtual Type getType() const =0;
+
+    virtual Field* clone() const =0;
+
+    virtual ~Field() {};
 };

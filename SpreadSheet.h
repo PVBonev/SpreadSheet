@@ -12,23 +12,33 @@ private:
     std::vector<int> colWidths;
     std::string fileN;    
 
-    double calculateFormula(std::string formula) const;//its private    
+    double calculateFormula(const std::string &formula) const;    
+
+    void copy(const SpreadSheet& other);
+    void erase();
 
 public:
     SpreadSheet();
+    SpreadSheet(const SpreadSheet& other);
+    SpreadSheet& operator=(const SpreadSheet& other);
+    ~SpreadSheet();
 
-    void addField(int row, int col, Field* field);
-    void addField();
-    void editField(int row, int col, std::string value);
+    void editField(int row, int col, std::string &value);
     void editField(int row, int col);
     void editField();
-    void saveToFile(std::string fileName) const;
+    void saveToFile(const std::string &fileName) const;
     void saveToFile() const;
-    void loadFromFile(std::string fileName);
+    void loadFromFile(const std::string &fileName);
     void close();
     void print() const;
 
     void resize();
 
     void updateSpreadSheet();
+
+    //NOT USED ANYWHERE
+    //void addField(int row, int col,const Field* field);
+    //void addField();
+
+    
 };

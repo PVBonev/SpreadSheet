@@ -2,6 +2,8 @@
 #include <string>
 #include "Field.h"
 
+
+
 Field::Field(int row, int column, std::string value, Type type) 
     : row(row), column(column), value(value), type(type) {}
 

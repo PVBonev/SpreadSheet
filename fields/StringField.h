@@ -15,6 +15,8 @@ public:
     double getValue() const override;
 
     Type getType() const override;
+
+    Field* clone() const override;
 };
 
 String::String(int row, int column, std::string value)
@@ -44,4 +46,9 @@ double String::getValue() const
 Type String::getType() const
 {
     return Type::StringField;
+}
+
+Field* String::clone() const
+{
+    return new String(*this);
 }

@@ -19,6 +19,8 @@ public:
     Type getType() const override;
 
     double getValue() const override;
+
+    Field* clone() const override;
 };
 
 Formula::Formula(int row, int column, std::string value,double result) : Field(row, column, value, Type::FormulaField), result(result) {}
@@ -46,4 +48,9 @@ Type Formula::getType() const
 double Formula::getValue() const
 {
     return result;
+}
+
+Field* Formula::clone() const
+{
+    return new Formula(*this);
 }

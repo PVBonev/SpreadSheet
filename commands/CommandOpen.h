@@ -18,7 +18,7 @@ public:
         file.open(fileName, std::ios::in);
         if(!file.is_open())
         {
-            std::cout << "File not found\n";
+            std::cerr << "Error:File not found\n";
         }
         else
         {           
