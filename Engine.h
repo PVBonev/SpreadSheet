@@ -99,6 +99,7 @@ void engine()
         else if(cmd.compare("exit") == 0)
         {
             std::cout<<"exit command called\n";
+            command = new CommandEmpty();
         }
         else
         {   
