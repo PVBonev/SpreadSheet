@@ -1,7 +1,8 @@
 #include <iostream>
 #include <cassert>
 #include <fstream>
-#include <cmath>
+#include <cmath>//for std::pow
+#include <algorithm>//for std::count
 #include "SpreadSheet.h"
 #include "WholeNumberField.h"
 #include "EmptyField.h"
@@ -227,15 +228,11 @@ void SpreadSheet::editField(int row,int col, std::string value)
 {
     int result = whatStringIsThat(value);
 
-    std::cout<<"\n\nEditFieldCommand\nresult:"<<result<<std::endl;
-
     switch (result)
     {
         case 0://0 is incorrect
         {    
-            std::cout<<"Error: row "<<row<<", col "<<col<<", "<<value<<" is unknown data type\n";
-            //Field* f = new EmptyField(row, col);
-            //fields[row - 1][col - 1] = f;
+            std::cerr<<"Error: row "<<row<<", col "<<col<<", "<<value<<" is unknown data type\n";
             break;
         }
         case 1://1 is whole number
@@ -274,8 +271,18 @@ void SpreadSheet::editField(int row,int col, std::string value)
         }
         case 4://4 is formula
         {
-            Field* f = new Formula(row, col, value,calculateFormula(value));
-            fields[row - 1][col - 1] = f;
+            //check if there is / followed by adress whose value is 0
+            if(value.find("/0") != std::string::npos)//there is devision by 0
+            {
+                std::cerr<<"Error: row "<<row<<", col "<<col<<", "<<value<<" is division by 0\n";
+                Field* f = new String(row, col, "\"ERROR\"");
+                fields[row - 1][col - 1] = f;
+            }
+            else
+            {
+                Field* f = new Formula(row, col, value,calculateFormula(value));
+                fields[row - 1][col - 1] = f;
+            }
             
             break;
         }
@@ -393,7 +400,8 @@ void SpreadSheet::loadFromFile(std::string fileName)
     std::ifstream file(fileName);
     if(file.is_open())
     {
-        std::string line;
+        std::string line,element;
+        int comaCount = 0;
         std::getline(file, line);
         std::size_t pos = line.find_first_of('-');
         std::size_t pos2 = line.find_first_of(':');
@@ -407,24 +415,33 @@ void SpreadSheet::loadFromFile(std::string fileName)
             fields[i].resize(cols);
             for(std::size_t j = 0; j < fields[i].size(); ++j)
             {
-                std::getline(file, line, ',');
-                if (!file.eof() && file.peek() == '\n') // Check if the next character is a newline
+                std::getline(file, element, ',');
+
+                int resultType = whatStringIsThat(element);                
+
+                if(resultType == 0 && comaCount != cols)
                 {
+                    std::cerr << "Error: File corrupted at row " << i + 1 << ". Expected " << cols << " commas, found " << comaCount << std::endl;
+                    assert(false && "Error: File corrupted");
+                }
+                comaCount++;
+
+                if (!file.eof() && file.peek() == '\n') // Check if the next character is a newline
+                {                    
                     file.ignore(1); // Ignore the newline character
                 }
-                int resultType = whatStringIsThat(line);
 
                 switch (resultType)
                 {
                     case 0://0 is incorrect
                     {    
-                        std::cerr<<"Error: row "<<i + 1<<", col "<<j + 1<<", " <<line<< " is unknown data type\n";
+                        std::cerr<<"Error: row "<<i + 1<<", col "<<j + 1<<", " <<element<< " is unknown data type\n";
                         assert(false);
                         break;
                     }
                     case 1://1 is whole number
                     {
-                        Field* f = new WholeNumber(i + 1, j + 1, line);
+                        Field* f = new WholeNumber(i + 1, j + 1, element);
                         fields[i][j] = f;
                         break;
                     }
@@ -442,22 +459,20 @@ void SpreadSheet::loadFromFile(std::string fileName)
                         {
                             line = line + "0";
                         }
-                        Field* f = new DecimalNumberField(i + 1, j + 1, line);//not yet implemented
+                        Field* f = new DecimalNumberField(i + 1, j + 1, element);//not yet implemented
                         fields[i][j] = f;
                         break;
                     }
                     case 3://3 is string
                     {
-                        Field* f = new String(i + 1, j + 1, line);//not yet implemented
+                        Field* f = new String(i + 1, j + 1, element);//not yet implemented
                         fields[i][j] = f;
                         break;
                     }
                     case 4://4 is formula
                     {
-                        std::cout<<"Formula:"<<line<<std::endl;
-                        Field* f = new Formula(i + 1, j + 1, line,0);//not yet implemented
+                        Field* f = new Formula(i + 1, j + 1, element,0);//not yet implemented
                         fields[i][j] = f;
-                        std::cout<<"Formula value:"<<f->getValue()<<std::endl;
                         break;
                     }
                     case 5://5 is empty
@@ -467,12 +482,8 @@ void SpreadSheet::loadFromFile(std::string fileName)
                         break;
                     }
                 }
-
-                if(fields[i][j]->getLength() > colWidths[j])
-                {
-                    colWidths[j] = fields[i][j]->getLength();
-                }
             }
+            comaCount = 0;
         }
 
         fileN = fileName;

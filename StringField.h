@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "Field.h"
+#include "Helpers.h"
 
 class String : public Field
 {
@@ -10,6 +11,8 @@ public:
     std::string print() const override;
 
     int getLength() const override;
+
+    double getValue() const override;
 
     Type getType() const override;
 };
@@ -25,6 +28,17 @@ std::string String::print() const//remove parenthesis
 int String::getLength() const
 {
     return value.size() - 2;
+}
+
+double String::getValue() const
+{
+    if(isWholeNumber(value.substr(1, value.size() - 2)) || isDecimalNumber(value.substr(1, value.size() - 2)))
+    {
+        return std::stoi(value.substr(1, value.size() - 2));
+    }else
+    {
+        return 0;
+    }
 }
 
 Type String::getType() const
