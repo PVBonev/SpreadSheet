@@ -5,7 +5,12 @@
 //all good
 bool isWholeNumber(std::string str)
 {
-    for(std::size_t i = 0; i < str.size(); ++i)
+    //can start with '+' or '-'
+    if(str[0] != '+' && str[0] != '-' && (str[0] < '0' || str[0] > '9'))
+    {
+        return false;
+    }
+    for(std::size_t i = 1; i < str.size(); ++i)
     {
         if(str[i] < '0' || str[i] > '9')
         {
@@ -18,8 +23,13 @@ bool isWholeNumber(std::string str)
 //all good
 bool isDecimalNumber(std::string str)
 {
+    if(str[0] != '+' && str[0] != '-' && (str[0] < '0' || str[0] > '9') && str[0] != '.')
+    {
+        return false;
+    }
+
     bool hasDot = false;
-    for(std::size_t i = 0; i < str.size(); ++i)
+    for(std::size_t i = 1; i < str.size(); ++i)
     {
         if(str[i] == '.')
         {
@@ -85,12 +95,14 @@ bool isAdress2(std::string str)
     return false;
 }
 
+
+//can have ^ operator
 bool isFormula(const std::string& str) 
 {
   if (str[0] == '=') 
   {
     // Find the first occurrence of any operator (+, -, *, /)
-    size_t pos = str.find_first_of("+-*/");
+    size_t pos = str.find_first_of("+-*^/");
 
     // Check if an operator was found
     if (pos != std::string::npos) 

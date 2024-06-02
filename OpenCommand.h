@@ -14,7 +14,6 @@ public:
 
     void execute(SpreadSheet &ss) override
     {
-        std::cout<<fileName<<" opened\n";
         std::fstream file;
         file.open(fileName, std::ios::in);
         if(!file.is_open())
@@ -22,7 +21,8 @@ public:
             std::cout << "File not found\n";
         }
         else
-        {            
+        {           
+            std::cout<<fileName<<" opened\n"; 
             ss.loadFromFile(fileName);
         }
     }

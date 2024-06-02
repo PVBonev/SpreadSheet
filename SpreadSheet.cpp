@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include <fstream>
+#include <cmath>
 #include "SpreadSheet.h"
 #include "WholeNumberField.h"
 #include "EmptyField.h"
@@ -25,7 +26,12 @@ double SpreadSheet::calculateFormula(std::string formula) const
 {
     double val1 = 0,val2 = 0;
 
-    std::size_t pos = formula.find_first_of("+-*/");
+    std::size_t pos = formula.find_first_of("+-*^/");
+
+    if(pos == std::string::npos)
+    {
+        std::cerr<<"Error: invalid operator\n";
+    }
     
     std::string first = formula.substr(1, pos - 1);
     std::string second = formula.substr(pos + 1, formula.size() - pos - 1);
@@ -67,6 +73,10 @@ double SpreadSheet::calculateFormula(std::string formula) const
     {
         return val1 / val2;
     }
+    else if(formula[pos] == '^')
+    {
+        return std::pow(val1, val2);
+    }
 }
 
 void SpreadSheet::updateSpreadSheet()
@@ -79,6 +89,7 @@ void SpreadSheet::updateSpreadSheet()
             {
                 Formula* f = dynamic_cast<Formula*>(fields[j][i]);
                 f->setResult(calculateFormula(f->getValueStr()));
+
             }
             
             if(fields[j][i]->getLength() > colWidths[i])
@@ -131,43 +142,139 @@ void SpreadSheet::addField(int row, int col, Field* field)
     }    
 }
 
-
-void SpreadSheet::editField(int row,int col, std::string formula)
+void SpreadSheet::addField()
 {
-    std::cout<<"new value: "<<formula<<std::endl;
-    int result = whatStringIsThat(formula);
-    std::cout<<"result: "<<result<<std::endl;
+    std::string rowStr, colStr;
+    int row = 0, col = 0;
+   
+    std::cout<<"row: ";
+    std::cin>>rowStr;
+    std::cout<<"column: ";
+    std::cin>>colStr;
+
+    if(!isWholeNumber(rowStr) || !isWholeNumber(colStr))//!!!!!!!!!!!!!!!!!!!!!
+    {
+        std::cout<<"Invalid input\n";
+        return;
+    }
+
+    
+    row = std::stoi(rowStr);
+    col = std::stoi(colStr);
+
+    if(row < rows && col < cols)
+    {
+        std::cout<<"Field already exists\n";
+        std::cout<<"Do you want to edit it? (y/n): ";
+        std::string answer;
+        std::cin>>answer;
+
+        std::cin.ignore();//
+
+        if(answer == "y")
+        {
+            editField(row, col);
+        }else if(answer == "n")
+        {
+            return;
+        }else
+        {
+            std::cout<<"Invalid input\n";
+            return;
+        }
+    }
+
+
+    //we have bigger row or column or both
+
+    if(row > rows)
+    {
+        fields.resize(row);//resize the rows
+        for(std::size_t i = rows; i < fields.size(); ++i)
+        {
+            fields[i].resize(cols);//resize the columns
+            for(std::size_t j = 0; j < fields[i].size(); ++j)
+            {
+                //if(fields[i][j] == nullptr)
+                fields[i][j] = new EmptyField(i + 1, j + 1);//add empty fields
+            }
+        }
+        rows = row;//update the table rows
+    }
+
+    if(col > cols)//we are adding a new column
+    {
+        
+        colWidths.resize(col);//resize the columns
+        for(std::size_t i = 0; i < fields.size(); ++i)
+        {
+            fields[i].resize(col);//resize the columns
+            for(std::size_t j = cols; j < fields[i].size(); ++j)
+            {
+                //if(fields[i][j] == nullptr)
+                fields[i][j] = new EmptyField(i + 1, j + 1);//add empty fields
+            }
+        }
+        cols = col;//update the table columns
+    }
+
+    std::cin.ignore();
+    editField(row, col);       
+    
+}
+
+void SpreadSheet::editField(int row,int col, std::string value)
+{
+    int result = whatStringIsThat(value);
+
+    std::cout<<"\n\nEditFieldCommand\nresult:"<<result<<std::endl;
 
     switch (result)
     {
         case 0://0 is incorrect
         {    
-            std::cout<<"Invalid input\n";
+            std::cout<<"Error: row "<<row<<", col "<<col<<", "<<value<<" is unknown data type\n";
             //Field* f = new EmptyField(row, col);
             //fields[row - 1][col - 1] = f;
             break;
         }
         case 1://1 is whole number
         {
-            Field* f = new WholeNumber(row, col, formula);
+            if(value[0] == '+')
+            {
+                value = value.substr(1);
+            }
+            Field* f = new WholeNumber(row, col, value);
             fields[row - 1][col - 1] = f;
             break;
         }
         case 2://2 is decimal number
         {
-            Field* f = new DecimalNumberField(row, col, formula);
+            if(value[0] == '+')
+            {
+                value = value.substr(1);
+            }
+            if(value[0] == '.')
+            {
+                value = "0" + value;
+            }
+            if(value[value.size()-1] == '.')
+            {
+                value = value + "0";
+            }
+            Field* f = new DecimalNumberField(row, col, value);
             fields[row - 1][col - 1] = f;
             break;
         }
         case 3://3 is string
         {
-            Field* f = new String(row, col, formula);
+            Field* f = new String(row, col, value);
             fields[row - 1][col - 1] = f;
             break;
         }
         case 4://4 is formula
         {
-            Field* f = new Formula(row, col, formula,calculateFormula(formula));
+            Field* f = new Formula(row, col, value,calculateFormula(value));
             fields[row - 1][col - 1] = f;
             
             break;
@@ -189,53 +296,8 @@ void SpreadSheet::editField(int row, int col)
     std::string newValue;
     getline(std::cin, newValue);
 
-    int result = whatStringIsThat(newValue);
-
-    switch (result)
-    {
-        case 0://0 is incorrect
-        {    
-            std::cout<<"Invalid input\n";
-            //Field* f = new EmptyField(row, col);
-            //fields[row - 1][col - 1] = f;
-            break;
-        }
-        case 1://1 is whole number
-        {
-            Field* f = new WholeNumber(row, col, newValue);
-            fields[row - 1][col - 1] = f;
-            break;
-        }
-        case 2://2 is decimal number
-        {
-            Field* f = new DecimalNumberField(row, col, newValue);
-            fields[row - 1][col - 1] = f;
-            break;
-        }
-        case 3://3 is string
-        {
-            Field* f = new String(row, col, newValue);
-            fields[row - 1][col - 1] = f;
-            break;
-        }
-        case 4://4 is formula
-        {
-            Field* f = new Formula(row, col, newValue,calculateFormula(newValue));
-            fields[row - 1][col - 1] = f;
-            
-            break;
-        }
-        case 5://5 is empty
-        {
-            Field* f = new EmptyField(row, col);
-            fields[row - 1][col - 1] = f;
-            break;
-        }
-    }
-
-    updateSpreadSheet();
+    editField(row, col, newValue);
 }
-
 
 void SpreadSheet::editField()
 {
@@ -256,61 +318,14 @@ void SpreadSheet::editField()
         col = std::stoi(colStr);
         if(row > rows || col > cols)
         std::cout<<"Invalid row or column\n";
-    }while(row > rows || col > cols);
-
-    
+    }while(row > rows || col > cols);    
 
     std::cout<<"new value: ";
     std::string newValue;
     std::cin.ignore();
     getline(std::cin, newValue);
 
-
-    int result = whatStringIsThat(newValue);
-
-    switch (result)
-    {
-        case 0://0 is incorrect
-        {    
-            std::cout<<"Invalid input\n";
-            //Field* f = new EmptyField(row, col);
-            //fields[row - 1][col - 1] = f;
-            break;
-        }
-        case 1://1 is whole number
-        {
-            Field* f = new WholeNumber(row, col, newValue);
-            fields[row - 1][col - 1] = f;
-            break;
-        }
-        case 2://2 is decimal number
-        {
-            Field* f = new DecimalNumberField(row, col, newValue);
-            fields[row - 1][col - 1] = f;
-            break;
-        }
-        case 3://3 is string
-        {
-            Field* f = new String(row, col, newValue);
-            fields[row - 1][col - 1] = f;
-            break;
-        }
-        case 4://4 is formula
-        {
-            Field* f = new Formula(row, col, newValue,calculateFormula(newValue));
-            fields[row - 1][col - 1] = f;
-            
-            break;
-        }
-        case 5://5 is empty
-        {
-            Field* f = new EmptyField(row, col);
-            fields[row - 1][col - 1] = f;
-            break;
-        }
-    }
-
-    updateSpreadSheet();
+    editField(row, col, newValue);
 }
 
 void SpreadSheet::print() const
@@ -338,6 +353,7 @@ void SpreadSheet::print() const
     }
 }
 
+//look for version that dooesn't write all the ',' at the end of the line
 void SpreadSheet::saveToFile(std::string fileName) const
 {
     std::ofstream file(fileName, std::ios::trunc);
@@ -383,6 +399,7 @@ void SpreadSheet::loadFromFile(std::string fileName)
         std::size_t pos2 = line.find_first_of(':');
         rows = std::stoi(line.substr(0, pos));
         cols = std::stoi(line.substr(pos + 1, pos2 - pos - 1));
+
         fields.resize(rows);
         colWidths.resize(cols);
         for(std::size_t i = 0; i < fields.size(); ++i)
@@ -396,13 +413,13 @@ void SpreadSheet::loadFromFile(std::string fileName)
                     file.ignore(1); // Ignore the newline character
                 }
                 int resultType = whatStringIsThat(line);
+
                 switch (resultType)
                 {
                     case 0://0 is incorrect
                     {    
-                        std::cout<<"Invalid input\n";
-                        Field* f = new EmptyField(i + 1, j + 1);
-                        fields[i][j] = f;
+                        std::cerr<<"Error: row "<<i + 1<<", col "<<j + 1<<", " <<line<< " is unknown data type\n";
+                        assert(false);
                         break;
                     }
                     case 1://1 is whole number
@@ -413,6 +430,18 @@ void SpreadSheet::loadFromFile(std::string fileName)
                     }
                     case 2://2 is decimal number
                     {
+                        if(line[0] == '+')
+                        {
+                            line = line.substr(1);
+                        }
+                        if(line[0] == '.')
+                        {
+                            line = "0" + line;
+                        }
+                        if(line[line.size()-1] == '.')
+                        {
+                            line = line + "0";
+                        }
                         Field* f = new DecimalNumberField(i + 1, j + 1, line);//not yet implemented
                         fields[i][j] = f;
                         break;
@@ -425,8 +454,10 @@ void SpreadSheet::loadFromFile(std::string fileName)
                     }
                     case 4://4 is formula
                     {
+                        std::cout<<"Formula:"<<line<<std::endl;
                         Field* f = new Formula(i + 1, j + 1, line,0);//not yet implemented
                         fields[i][j] = f;
+                        std::cout<<"Formula value:"<<f->getValue()<<std::endl;
                         break;
                     }
                     case 5://5 is empty
@@ -442,7 +473,6 @@ void SpreadSheet::loadFromFile(std::string fileName)
                     colWidths[j] = fields[i][j]->getLength();
                 }
             }
-            std::cout<<std::endl;
         }
 
         fileN = fileName;

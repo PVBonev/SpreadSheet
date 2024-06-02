@@ -4,10 +4,12 @@
 #include "OpenCommand.h"
 #include "CloseCommand.h"
 #include "PrintCommand.h"
+#include "InvalidCommand.h"
 #include "EmptyCommand.h"
 #include "SaveAsCommand.h"
 #include "SaveCommand.h"
 #include "EditCommand.h"
+#include "AddFieldCommand.h"
 #include "ExamplesCommand.h"
 
 
@@ -47,9 +49,6 @@ void engine()
             }
         }
 
-        std::cout<<"cmd: "<<cmd<<"\n";
-        std::cout<<"args: "<<args<<"\n";
-        //cmd.push_back('\0');
         Command* command;
 
         if(cmd.compare("help") == 0)//its not the terminating 0//cmd == "help"
@@ -85,6 +84,10 @@ void engine()
                 command = new EditCommand(args);
             }
         }
+        else if(cmd.compare("add") == 0)
+        {
+            command = new AddFieldCommand();
+        }
         else if(cmd.compare("print") == 0)
         {
             command = new PrintCommand();
@@ -99,7 +102,7 @@ void engine()
         }
         else
         {   
-            command = new EmptyCommand();
+            command = new InvalidCommand();
         }
 
         command->execute(sheet);

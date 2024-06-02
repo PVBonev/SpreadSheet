@@ -1,10 +1,11 @@
 #pragma once
 #include "Command.h"
 
-class EmptyCommand: public Command
+class AddFieldCommand : public Command
 {
 public:
     void execute(SpreadSheet &ss) override
     {
+        ss.addField();
     }
 };
