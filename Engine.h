@@ -10,6 +10,7 @@
 #include "./commands/CommandSave.h"
 #include "./commands/CommandEdit.h"
 #include "./commands/CommandExamples.h"
+#include "./commands/CommandResize.h"
 
 
 void engine()
@@ -82,6 +83,10 @@ void engine()
             {
                 command = new CommandEdit(args);
             }
+        }
+         else if (cmd.compare("resize") == 0) 
+        {
+          command = new CommandResize();
         }
         else if(cmd.compare("print") == 0)
         {

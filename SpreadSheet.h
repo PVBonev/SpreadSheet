@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "Field.h"
+#include "./fields/Field.h"
 
 class SpreadSheet
 {
@@ -27,6 +27,8 @@ public:
     void loadFromFile(std::string fileName);
     void close();
     void print() const;
+
+    void resize();
 
     void updateSpreadSheet();
 };

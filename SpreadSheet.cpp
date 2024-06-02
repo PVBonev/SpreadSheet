@@ -4,11 +4,11 @@
 #include <cmath>//for std::pow
 #include <algorithm>//for std::count
 #include "SpreadSheet.h"
-#include "WholeNumberField.h"
-#include "EmptyField.h"
-#include "StringField.h"
-#include "FormulaField.h"
-#include "DecimalNumberField.h"
+#include "./fields/WholeNumberField.h"
+#include "./fields/EmptyField.h"
+#include "./fields/StringField.h"
+#include "./fields/FormulaField.h"
+#include "./fields/DecimalNumberField.h"
 #include "Helpers.h"
 
 
@@ -510,6 +510,87 @@ void SpreadSheet::close()
     }
     colWidths.clear();
     fileN = "";
+}
+
+void SpreadSheet::resize()
+{
+    std::size_t newRow,newCol;
+
+    std::cout<<"new rows: ";
+    std::cin>>newRow;
+    std::cout<<"new columns: ";
+    std::cin>>newCol;
+
+    if(newRow < rows)
+    {
+        std::cout<<"Warning: new rows are less than the current ones\nContinue? (y/n): ";
+        char answer;
+        std::cin>>answer;
+        if(answer == 'n')
+        {
+            return;
+        }else if(answer == 'y')
+        {
+            fields.resize(newRow);
+        }else
+        {
+            std::cout<<"Invalid input\n";
+            return;
+        }        
+    }
+
+    if(newRow > rows)
+    {
+        fields.resize(newRow);
+        for(std::size_t i = rows; i < newRow; ++i)
+        {
+            fields[i].resize(cols);
+            for(std::size_t j = 0; j < fields[i].size(); ++j)
+            {
+                fields[i][j] = new EmptyField(i + 1, j + 1);
+            }
+        }
+        
+    }
+
+    rows = newRow;
+
+    if(newCol < cols)
+    {
+        std::cout<<"Warning: new columns are less than the current ones\nContinue? (y/n): ";
+        char answer;
+        std::cin>>answer;
+        if(answer == 'n')
+        {
+            return;
+        }else if(answer == 'y')
+        {
+            for(std::size_t i = 0; i < fields.size(); ++i)
+            {
+                fields[i].resize(newCol);
+            }
+        }else
+        {
+            std::cout<<"Invalid input\n";
+            return;
+        }        
+    }
+
+    if(newCol > cols)
+    {
+        colWidths.resize(newCol);
+        for(std::size_t i = 0; i < rows; ++i)
+        {
+            fields[i].resize(newCol);
+            for(std::size_t j = cols; j < newCol; ++j)
+            {
+                fields[i][j] = new EmptyField(i + 1, j + 1);
+            }
+        }
+    }
+
+    cols = newCol;
+    std::cin.ignore();
 }
 
 
