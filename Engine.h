@@ -1,28 +1,22 @@
 #include <iostream>
 #include <string>
-#include "./commands/CommandHelp.h"
-#include "./commands/CommandOpen.h"
-#include "./commands/CommandClose.h"
-#include "./commands/CommandPrint.h"
-#include "./commands/CommandInvalid.h"
-#include "./commands/CommandEmpty.h"
-#include "./commands/CommandSaveAs.h"
-#include "./commands/CommandSave.h"
-#include "./commands/CommandEdit.h"
-#include "./commands/CommandExamples.h"
-#include "./commands/CommandResize.h"
+#include "./commands/Commands.h"
 
-
+/**
+ * @brief The main engine function for the spreadsheet application.
+ * 
+ * This function handles the main loop of the application, processing user input and executing commands.
+ */
 void engine()
 {
-    SpreadSheet sheet;
-    std::string cmd;
-    std::string args;
-    bool inCmd = true;
-    bool closed = true;
+    SpreadSheet sheet; ///< The main spreadsheet object
+    std::string cmd; ///< The command entered by the user
+    std::string args; ///< The arguments for the command
+    bool inCmd = true; ///< Flag to indicate if the input is a command
+    bool closed = true; ///< Flag to indicate if the spreadsheet is closed
 
     std::cout<<"Welcome to Peci's SpreadSheet \n\ntype \"help\" for a list of commands and \"examples\" for example fields\n";
-    std::string input;
+    std::string input; ///< The raw input from the user
     do
     {
         std::cout<<"\n>";
@@ -31,7 +25,7 @@ void engine()
         inCmd = true;
         getline(std::cin, input);
 
-        
+        // Parse the input into command and arguments
         for(int i = 0; i < input.size(); i++)
         {
             if(input[i] == ' ')//if we read a space we are done with the command
@@ -49,8 +43,9 @@ void engine()
             }
         }
 
-        Command* command;
+        Command* command; ///< The command object to execute
 
+        // Determine the command to execute based on the input
         if(cmd.compare("help") == 0)//its not the terminating 0//cmd == "help"
         {
             command = new CommandHelp();            
@@ -84,9 +79,10 @@ void engine()
                 command = new CommandEdit(args);
             }
         }
-         else if (cmd.compare("resize") == 0) 
+        else if (cmd.compare("resize") == 0) 
         {
           command = new CommandResize();
+          closed = false;
         }
         else if(cmd.compare("print") == 0)
         {
@@ -106,7 +102,6 @@ void engine()
             command = new CommandInvalid();
         }
 
-        command->execute(sheet);
+        command->execute(sheet); ///< Execute the command
     }while(cmd != "exit");
 }
-

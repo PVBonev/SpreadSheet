@@ -1,11 +1,26 @@
 #pragma once
 #include "Command.h"
 
+/**
+ * @class CommandEdit
+ * @brief A class representing an edit command in a spreadsheet application.
+ * @details This class inherits from the Command class.
+ */
 class CommandEdit : public Command
 {
-    std::string args;
+    std::string args; ///< The arguments for the edit command
+
 public:
+    /**
+     * @brief Constructor for the CommandEdit class.
+     * @param args The arguments for the edit command.
+     */
     CommandEdit(std::string args) : args(args) {}
+
+    /**
+     * @brief Executes the edit command on a given spreadsheet.
+     * @param ss The spreadsheet to execute the command on.
+     */
     void execute(SpreadSheet &ss)
     {
         if(args.empty())

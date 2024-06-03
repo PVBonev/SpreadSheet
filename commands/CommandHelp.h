@@ -2,9 +2,19 @@
 #include <iostream>
 #include "Command.h"
 
+/**
+ * @class CommandHelp
+ * @brief A class representing a help command in a spreadsheet application.
+ * @details This class inherits from the Command class. The help command prints a list of available commands when executed.
+ */
 class CommandHelp: public Command
 {
 public:
+    /**
+     * @brief Executes the help command on a given spreadsheet.
+     * @param ss The spreadsheet to execute the command on.
+     * @note This function prints a list of available commands.
+     */
     void execute(SpreadSheet &ss) override
     {
         std::cout << "List of commands:\n"

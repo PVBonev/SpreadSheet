@@ -2,10 +2,10 @@
 
 enum Type
 {
-    Incorrect = 0,
-    WholeNumField = 1,
-    DecimalNumField = 2,
-    StringField = 3,
-    FormulaField = 4,
-    Empty = 5       
+    INCORRECT = 0,
+    WHOLE_NUMBER = 1,
+    DECIMAL_NUMBER = 2,
+    STRING = 3,
+    FORMULA = 4,
+    EMPTY = 5       
 };

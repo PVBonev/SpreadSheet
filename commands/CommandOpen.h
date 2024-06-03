@@ -1,29 +1,37 @@
 #pragma once
 #include <iostream>
-#include <string>
-#include <fstream>
 #include "Command.h"
-//#include "SpreadSheet.h"
 
+/**
+ * @class CommandOpen
+ * @brief A class representing an open command in a spreadsheet application.
+ * @details This class inherits from the Command class. The open command opens a file when executed.
+ */
 class CommandOpen: public Command
 {
-private:
-    std::string fileName;
-public:
-    CommandOpen(std::string fileName): fileName(fileName) {}
+    std::string args; ///< The arguments for the open command
 
+public:
+    /**
+     * @brief Constructor for the CommandOpen class.
+     * @param args The arguments for the open command.
+     */
+    CommandOpen(std::string args) : args(args) {}
+
+    /**
+     * @brief Executes the open command on a given spreadsheet.
+     * @param ss The spreadsheet to execute the command on.
+     * @note This function opens a file if a filename is specified.
+     */
     void execute(SpreadSheet &ss) override
     {
-        std::fstream file;
-        file.open(fileName, std::ios::in);
-        if(!file.is_open())
+        if(args.empty())
         {
-            std::cerr << "Error:File not found\n";
-        }
-        else
-        {           
-            std::cout<<fileName<<" opened\n"; 
-            ss.loadFromFile(fileName);
+            std::cout<<"No file specified\n";
+        }else
+        {
+            std::cout<<"File opened\n";
+            ss.loadFromFile(args);
         }
     }
 };

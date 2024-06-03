@@ -130,7 +130,7 @@ void SpreadSheet::updateSpreadSheet()
     {
         for(std::size_t j = 0; j < fields.size(); ++j)//go through every element in the column
         {
-            if(fields[j][i]->getType() == Type::FormulaField)
+            if(fields[j][i]->getType() == Type::FORMULA)
             {
                 Formula* f = dynamic_cast<Formula*>(fields[j][i]);
                 f->setResult(calculateFormula(f->getValueStr()));
@@ -419,6 +419,7 @@ void SpreadSheet::saveToFile(const std::string &fileName) const
             }
             file<<'\n';
         }
+        std::cout<<"Saved to "<<fileName<<"\n";
     }
     else
     {
@@ -634,60 +635,3 @@ void SpreadSheet::resize()
     cols = newCol;
     std::cin.ignore();
 }
-
-
-/*
-int main()
-{
-    SpreadSheet ss;
-    WholeNumber f(1,1,"111"),f2(1,2,"22"),f3(1,3,"333");
-    WholeNumber f4(2,1,"4"),f5(2,2,"5"),f6(2,3,"6");
-    WholeNumber f7(3,1,"7"),f8(3,2,"8"),f9(3,3,"9");
-    WholeNumber f10(5,1,"10"),f11(1,5,"11"),f12(5,5,"12");
-
-    ss.addField(1, 1, &f);
-    ss.addField(1, 2, &f2);
-    ss.addField(1, 3, &f3);
-    ss.addField(2, 1, &f4);
-    ss.addField(2, 2, &f5);
-    ss.addField(2, 3, &f6);
-    ss.addField(3, 1, &f7);
-    ss.addField(3, 2, &f8);
-    ss.addField(3, 3, &f9);
-
-    ss.addField(5, 1, &f10);
-    ss.addField(1, 5, &f11);
-    ss.addField(5,5, &f12);
-
-    //std::cout<<"Printing ss\n";
-    ss.print();
-
-    //ss.editField();
-    //ss.editField();
-    //std::cout<<"Printing ss updated\n";
-    //ss.print();
-
-    //ss.saveToFile("test.txt");
-
-    //SpreadSheet ss2;
-    //ss2.loadFromFile("test.txt");
-    //std::cout<<"Printing ss2\n";
-    //ss2.print();
-    //ss2.saveToFile("test2.txt");
-
-    //std::cout<<"Printing ss updated\n";
-    //ss.loadFromFile("test2.txt");
-    //ss.print();
-
-    std::cout<<"\n\n\nCalculating:\n"<<
-    std::to_string(ss.calculateFormula("=1+2"))<<std::endl;
-    std::cout<<std::to_string(ss.calculateFormula("=R1C1+R2C2"))<<std::endl;
-    std::cout<<std::to_string(ss.calculateFormula("=R1C1-R2C2"))<<std::endl;
-    std::cout<<std::to_string(ss.calculateFormula("=R1C1*R2C2"))<<std::endl;
-    std::cout<<std::to_string(ss.calculateFormula("=R1C1/R2C2"))<<std::endl;
-    std::cout<<std::to_string(ss.calculateFormula("=R1C1+10"))<<std::endl;
-    std::cout<<std::to_string(ss.calculateFormula("=15+R1C1"))<<std::endl;
-    
-    return 0;
-}
-*/
