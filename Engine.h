@@ -103,5 +103,7 @@ void engine()
         }
 
         command->execute(sheet); ///< Execute the command
+        delete command; ///< Free the memory allocated for the command
     }while(cmd != "exit");
+
 }
